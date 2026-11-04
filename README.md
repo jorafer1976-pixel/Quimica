@@ -1,2 +1,2 @@
-# Programa-formulaci-n
+# Programa-formulación
 Programa Formulación
