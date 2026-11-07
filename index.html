@@ -207,6 +207,14 @@
         #lewis-view .lw2-panel[data-s="partial"] { border-left: 5px solid #d97706; }
         #lewis-view .lw2-panel[data-s="bad"] { border-left: 5px solid #dc2626; }
         #lewis-view .lw2-st.lw2-warn b { background: #d97706; color: #fff; }
+        /* --- iones y rejilla de electrones --- */
+        #lewis-view .lw2-g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        #lewis-view .lw2-g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        @media (max-width: 860px) { #lewis-view .lw2-g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 440px) { #lewis-view .lw2-g2 { grid-template-columns: 1fr; } }
+        #lewis-view .lw2-grp-label { font-size: .8rem; font-weight: 700; color: #475569; }
+        #lewis-view .lw2-chip.lw2-chip-ion { background: #fef3c7; border-color: #fcd34d; color: #92400e; }
+        #lewis-view .lw2-chip.lw2-chip-ion:hover { background: #fde68a; }
         #lewis-view .lw2-cfg-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: .75rem; }
         #lewis-view .lw2-tag { display: inline-block; margin-left: .35rem; padding: .05rem .4rem; border-radius: .4rem; background: #fef3c7; color: #92400e; font-size: .68rem; font-weight: 800; }
         #lewis-view .lw2-details { margin: 0 0 .75rem; padding: .55rem .75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: .75rem; font-size: .83rem; color: #475569; line-height: 1.5; }
@@ -357,7 +365,7 @@
         </header>
         <main class="flex-grow w-full max-w-3xl mx-auto px-4 py-8 flex flex-col items-center">
             <div id="quiz-card" class="bg-white p-6 md:p-8 rounded-3xl shadow-lg border border-slate-100 w-full text-center relative hidden">
-                <div class="absolute top-4 right-6 flex items-center gap-3">
+                <div class="flex items-center justify-end gap-3 mb-3">
                     <button onclick="showQuizResults()" class="text-xs font-bold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors border border-red-200">Terminar Test 🛑</button>
                     <div class="text-sm font-bold text-slate-400" id="quiz-progress">1/10</div>
                 </div>
@@ -517,11 +525,11 @@
 
             <!-- SELECTOR DE MOLÉCULA -->
             <section id="lw2-picker" class="lw2-card">
-                <h2 class="lw2-h2"><span>Elige una molécula</span></h2>
-                <p class="lw2-p">Escribe una fórmula (p. ej. <code>H2O</code>, <code>CO2</code>, <code>BF3</code>) o pulsa una de la lista. No se muestra la solución hasta que hayas respondido los 6 pasos.</p>
+                <h2 class="lw2-h2"><span>Elige una molécula o un ion</span></h2>
+                <p class="lw2-p">Escribe una fórmula (p. ej. <code>H2O</code>, <code>CO2</code>, <code>BF3</code>, o un ion como <code>NH4+</code>, <code>NO3-</code>, <code>SO4 2-</code>) o pulsa una de la lista (en ámbar, los iones). No se muestra la solución hasta que hayas respondido los 6 pasos.</p>
                 <div class="lw2-row">
                     <label class="lw2-label lw2-grow">Fórmula
-                        <input id="lw2-input" class="lw2-input" type="text" placeholder="Ej. NH3" autocomplete="off" spellcheck="false">
+                        <input id="lw2-input" class="lw2-input" type="text" placeholder="Ej. NH3, NO3-, SO4 2-" autocomplete="off" spellcheck="false">
                     </label>
                     <button class="lw2-btn lw2-btn-primary" onclick="LW2.pickFromInput()">Empezar</button>
                     <button class="lw2-btn" onclick="LW2.random()">🎲 Aleatoria</button>
@@ -557,19 +565,19 @@
                 <!-- PASO 2 -->
                 <div class="lw2-card lw2-panel lw2-hidden" data-k="2">
                     <h2 class="lw2-h2"><span class="lw2-num">2</span><span>Electrones y nubes alrededor del átomo central (<span id="lw2-c2"></span>)</span></h2>
-                    <p class="lw2-p">Calcula los electrones de la molécula y después indica cuántas nubes de enlace y cuántos pares solitarios rodean al átomo central.</p>
+                    <p class="lw2-p">Calcula los electrones de la molécula y después indica cuántas nubes de enlace y cuántos pares de electrones solitarios rodean al átomo central.</p>
                     <details class="lw2-details"><summary>Pista</summary>
-                        <b>D</b> = suma de los e⁻ de valencia de todos los átomos · <b>N</b> = e⁻ necesarios (H: 2, Be: 4, B: 6, resto: 8) · <b>E = N − D</b> (e⁻ en enlaces) · <b>L = D − E</b> (e⁻ solitarios).<br>Para la TRPECV, un enlace sencillo, doble o triple cuenta siempre como <b>una sola nube</b>.</details>
-                    <div class="lw2-calc-grid">
-                        <label class="lw2-calc-label">Disponibles (D):<input id="lw2-D" class="lw2-calc-input" type="number" step="1" inputmode="numeric" placeholder="D"></label>
-                        <label class="lw2-calc-label">Necesarios (N):<input id="lw2-N" class="lw2-calc-input" type="number" step="1" inputmode="numeric" placeholder="N"></label>
-                        <label class="lw2-calc-label">Enlazantes (E):<input id="lw2-E" class="lw2-calc-input" type="number" step="1" inputmode="numeric" placeholder="E = N - D"></label>
-                        <label class="lw2-calc-label">Solitarios (L):<input id="lw2-L" class="lw2-calc-input" type="number" step="1" inputmode="numeric" placeholder="L = D - E"></label>
+                        <b>D</b> = suma de los e⁻ de valencia de todos los átomos <b>− la carga</b> si es un ion (un anión aporta e⁻ extra, un catión pierde) · <b>N</b> = e⁻ necesarios (H: 2, Be: 4, B: 6, resto: 8) · <b>E = N − D</b> (e⁻ en enlaces) · <b>L = D − E</b> (e⁻ solitarios).<br>Para la TRPECV, un enlace sencillo, doble o triple cuenta siempre como <b>una sola nube</b>.</details>
+                    <div class="lw2-calc-grid lw2-g4">
+                        <label class="lw2-calc-label">Electrones disponibles (D):<input id="lw2-D" class="lw2-calc-input" type="number" step="1" inputmode="numeric" placeholder="D"></label>
+                        <label class="lw2-calc-label">Electrones necesarios (N):<input id="lw2-N" class="lw2-calc-input" type="number" step="1" inputmode="numeric" placeholder="N"></label>
+                        <label class="lw2-calc-label">Electrones enlazantes (E):<input id="lw2-E" class="lw2-calc-input" type="number" step="1" inputmode="numeric" placeholder="E = N - D"></label>
+                        <label class="lw2-calc-label">Electrones solitarios (L):<input id="lw2-L" class="lw2-calc-input" type="number" step="1" inputmode="numeric" placeholder="L = D - E"></label>
                     </div>
                     <hr class="lw2-hr">
-                    <div class="lw2-calc-grid">
-                        <label class="lw2-calc-label">Nubes de enlace:<input id="lw2-bp" class="lw2-calc-input" type="number" min="0" max="8" step="1" inputmode="numeric" placeholder="Nº de nubes"></label>
-                        <label class="lw2-calc-label">Pares solitarios:<input id="lw2-lp" class="lw2-calc-input" type="number" min="0" max="8" step="1" inputmode="numeric" placeholder="Nº de pares"></label>
+                    <div class="lw2-calc-grid lw2-g2">
+                        <label class="lw2-calc-label">Nubes de electrones de enlace:<input id="lw2-bp" class="lw2-calc-input" type="number" min="0" max="8" step="1" inputmode="numeric" placeholder="Nº de nubes de e⁻"></label>
+                        <label class="lw2-calc-label">Pares de electrones solitarios:<input id="lw2-lp" class="lw2-calc-input" type="number" min="0" max="8" step="1" inputmode="numeric" placeholder="Nº de pares de e⁻"></label>
                     </div>
                     <button class="lw2-verify" onclick="LW2.verify(2)">Verificar y Calcular</button>
                     <div id="lw2-fb2" class="lw2-hidden"></div>
@@ -578,7 +586,7 @@
                 <!-- PASO 3 -->
                 <div class="lw2-card lw2-panel lw2-hidden" data-k="3">
                     <h2 class="lw2-h2"><span class="lw2-num">3</span><span>Propuesta de estructura de Lewis</span></h2>
-                    <p class="lw2-p">Construye la estructura en el lienzo: añade los átomos, únelos con enlaces (haz clic en dos átomos; otro clic sobre el mismo enlace lo hace doble o triple) y coloca los pares solitarios. Puedes arrastrar los átomos.</p>
+                    <p class="lw2-p">Construye la estructura en el lienzo: añade los átomos, únelos con enlaces (haz clic en dos átomos; otro clic sobre el mismo enlace lo hace doble o triple) y coloca los pares de electrones solitarios. Puedes arrastrar los átomos.</p>
                     <div class="lw2-toolbar">
                         <div class="lw2-grp">
                             <select id="lw2-el" class="lw2-select"></select>
@@ -586,9 +594,18 @@
                         </div>
                         <div class="lw2-grp">
                             <button id="lw2-tool-connect" class="lw2-btn lw2-on" onclick="LW2.setTool('connect')">🔗 Enlace</button>
-                            <button id="lw2-tool-lonepair" class="lw2-btn" onclick="LW2.setTool('lonepair')">•• Par solitario</button>
-                            <button id="lw2-tool-charge" class="lw2-btn" onclick="LW2.setTool('charge')">± Carga</button>
+                            <button id="lw2-tool-lonepair" class="lw2-btn" onclick="LW2.setTool('lonepair')">•• Par de e⁻ solitario</button>
+                            <button id="lw2-tool-charge" class="lw2-btn" onclick="LW2.setTool('charge')">± Carga formal</button>
+                            <select id="lw2-charge-val" class="lw2-select" title="Número y signo de la carga que se pondrá al pulsar un átomo">
+                                <option value="1">+1</option><option value="2">+2</option><option value="3">+3</option><option value="-1" selected>−1</option><option value="-2">−2</option><option value="-3">−3</option><option value="0">0 (quitar)</option>
+                            </select>
                             <button id="lw2-tool-delete" class="lw2-btn lw2-del" onclick="LW2.setTool('delete')">🗑 Borrar átomo</button>
+                        </div>
+                        <div class="lw2-grp">
+                            <span class="lw2-grp-label">Carga total del ion:</span>
+                            <select id="lw2-ion" class="lw2-select" onchange="LW2.setIon(this.value)" title="Si es un ion, indica su carga total: se dibuja entre corchetes">
+                                <option value="0" selected>0 (neutra)</option><option value="1">+1</option><option value="2">+2</option><option value="3">+3</option><option value="-1">−1</option><option value="-2">−2</option><option value="-3">−3</option>
+                            </select>
                         </div>
                         <div class="lw2-grp">
                             <button class="lw2-btn" onclick="LW2.theme('dark')">Oscuro</button>
@@ -596,7 +613,7 @@
                             <button class="lw2-btn" onclick="LW2.clearCanvas()">Limpiar</button>
                         </div>
                     </div>
-                    <p class="lw2-tip">Modo actual: <b id="lw2-toolname">Enlace</b>. Con «Par solitario» cada clic añade un par (0–4); con «Carga» cada clic cambia la carga formal.</p>
+                    <p class="lw2-tip">Modo actual: <b id="lw2-toolname">Enlace</b>. Con «Par de e⁻ solitario» cada clic añade un par (0–4). Con «± Carga formal» elige primero el número y el signo y pulsa el átomo (otro clic lo quita). Si es un ion, indica su «Carga total»: se dibuja entre corchetes.</p>
                     <div id="lw2-ws" class="lw2-ws lw-theme-dark"><svg id="lw2-svg" class="lw2-svg"></svg></div>
                     <div id="lw2-counter" class="lw2-counter"></div>
                     <button class="lw2-verify" onclick="LW2.verify(3)">Verificar y Calcular</button>
@@ -636,6 +653,7 @@
                     <div class="lw2-opts">
                         <button class="lw2-opt" data-v="polar" onclick="LW2.setPol('polar')">Polar (μ ≠ 0)</button>
                         <button class="lw2-opt" data-v="apolar" onclick="LW2.setPol('apolar')">Apolar (μ = 0)</button>
+                        <button class="lw2-opt lw2-hidden" id="lw2-opt-ion" data-v="ion" onclick="LW2.setPol('ion')">Es un ion (no procede)</button>
                     </div>
                     <label class="lw2-calc-label">Justificación (opcional):
                         <textarea id="lw2-just" class="lw2-textarea" rows="3" maxlength="400" placeholder="Explica brevemente por qué…"></textarea>
@@ -2073,10 +2091,10 @@
                     tip('Para dibujar un isómero de una molécula dada, mantén C, H y O y cambia la posición o el grupo funcional; luego indica los grupos funcionales que contiene.'),
 
                 /* ---------- LEWIS / TRPECV ---------- */
-                'Estructuras de Lewis y TRPECV': `<strong>Pasos:</strong> 1) electrones de valencia totales (D); 2) electrones necesarios para el octeto (N); 3) enlazantes E = N − D; 4) solitarios L = D − E; 5) colocar pares y comprobar cargas formales.` +
+                'Estructuras de Lewis y TRPECV': `<strong>Pasos:</strong> 1) electrones de valencia totales (D); 2) electrones necesarios para el octeto (N); 3) enlazantes E = N − D; 4) solitarios L = D − E; 5) colocar los pares de electrones y comprobar las cargas formales. <b>En un ion</b>, D = Σ e⁻ de valencia − carga (un anión gana e⁻, un catión los pierde) y la estructura se escribe entre corchetes con su carga.` +
                     ul(['<strong>Excepciones al octeto:</strong> H (2 e⁻), Be (4 e⁻, 2 enlaces) y B (6 e⁻, 3 enlaces).', '<strong>TRPECV:</strong> los pares de electrones (nubes) se repelen y se sitúan lo más lejos posible; en la PAU, hasta 4 nubes. Un enlace doble o triple cuenta como <em>una</em> nube.']) +
                     tbl([['2 nubes (2 enlazantes)', 'Lineal 180º', 'BeCl<sub>2</sub>, CO<sub>2</sub>, HCN'], ['3 nubes (3 enlazantes)', 'Triangular plana 120º', 'BF<sub>3</sub>, H<sub>2</sub>CO'], ['3 nubes (2 enl. + 1 libre)', 'Angular < 120º', 'SO<sub>2</sub>, O<sub>3</sub>'], ['4 nubes (4 enlazantes)', 'Tetraédrica 109,5º', 'CH<sub>4</sub>, CCl<sub>4</sub>'], ['4 nubes (3 enl. + 1 libre)', 'Piramidal trigonal < 109,5º', 'NH<sub>3</sub>, PH<sub>3</sub>'], ['4 nubes (2 enl. + 2 libres)', 'Angular < 109,5º', 'H<sub>2</sub>O, H<sub>2</sub>S']]) +
-                    tip('Los pares solitarios repelen más que los enlazantes y comprimen los ángulos. Polaridad: la molécula es apolar solo si la geometría es simétrica y los enlaces iguales.'),
+                    tip('Los pares de electrones solitarios repelen más que los enlazantes y comprimen los ángulos. Polaridad: la molécula es apolar solo si la geometría es simétrica y los enlaces iguales.'),
 
                 /* ---------- REACTIVIDAD Y REDOX (PAU C. Valenciana) ---------- */
                 'Ajuste de Reacciones': `<strong>Ajuste:</strong> la masa se conserva, así que debe haber el mismo número de átomos de cada elemento en los dos miembros. En la PAU de la Comunitat Valenciana se acepta <em>cualquier método</em> salvo que el enunciado indique otro.` +
@@ -2492,6 +2510,13 @@
                 ['H2CO', 'C', [['O', 2], H1, H1], 8, ['CH2O', 'HCHO']],
                 // AX2E · angular < 120º
                 ['SO2', 'S', [['O', 2], ['O', 1]], 8], ['O3', 'O', [['O', 2], ['O', 1]], 8],
+                // IONES (regla del octeto, enlaces sencillos y cargas formales; máximo 4 nubes)
+                ['NO2', 'N', [['O', 2], ['O', 1]], 8, [], -1], ['ClO2', 'Cl', [['O', 1], ['O', 1]], 8, [], -1], ['NH2', 'N', [H1, H1], 8, [], -1],
+                ['NO3', 'N', [['O', 2], ['O', 1], ['O', 1]], 8, [], -1], ['CO3', 'C', [['O', 2], ['O', 1], ['O', 1]], 8, [], -2],
+                ['H3O', 'O', [H1, H1, H1], 8, [], 1], ['SO3', 'S', [['O', 1], ['O', 1], ['O', 1]], 8, [], -2],
+                ['NH4', 'N', [H1, H1, H1, H1], 8, [], 1], ['SO4', 'S', [['O', 1], ['O', 1], ['O', 1], ['O', 1]], 8, [], -2],
+                ['PO4', 'P', [['O', 1], ['O', 1], ['O', 1], ['O', 1]], 8, [], -3], ['ClO4', 'Cl', [['O', 1], ['O', 1], ['O', 1], ['O', 1]], 8, [], -1],
+                ['BF4', 'B', [F1, F1, F1, F1], 8, [], -1],
                 // AX4 · tetraédrica
                 ['CH4', 'C', [H1, H1, H1, H1], 8], ['SiH4', 'Si', [H1, H1, H1, H1], 8], ['CCl4', 'C', [Cl1, Cl1, Cl1, Cl1], 8],
                 ['SiF4', 'Si', [F1, F1, F1, F1], 8], ['CH3Cl', 'C', [Cl1, H1, H1, H1], 8], ['CHCl3', 'C', [H1, Cl1, Cl1, Cl1], 8],
@@ -2513,22 +2538,28 @@
                 }).join(' + ');
             }
 
+            const chargeKey = q => (q ? (Math.abs(q) > 1 ? Math.abs(q) : '') + (q > 0 ? '+' : '-') : '');
+            const speciesHTML = (base, q) => pretty(base) + (q ? `<sup>${Math.abs(q) > 1 ? Math.abs(q) : ''}${q > 0 ? '+' : '−'}</sup>` : '');
+            const chargeLabel = q => (Math.abs(q) > 1 ? Math.abs(q) : '') + (q > 0 ? '+' : '−');
             function buildMol(def) {
-                const [f, c, ligs, centralNeed, alias] = def;
+                const [base, c, ligs, centralNeed, alias, charge = 0] = def;
+                const f = base + chargeKey(charge);
                 const n = ligs.length, valC = EL[c].v, need = centralNeed || 8;
-                const D = valC + ligs.reduce((s, [e]) => s + EL[e].v, 0);          // e⁻ disponibles
+                const D = valC + ligs.reduce((s, [e]) => s + EL[e].v, 0) - charge;  // e⁻ disponibles (un anión aporta e⁻ extra)
                 const N = need + ligs.reduce((s, [e]) => s + (e === 'H' ? 2 : 8), 0); // e⁻ necesarios
                 const E = N - D, L = D - E;                                          // enlazantes / solitarios
                 const sumO = ligs.reduce((s, [, o]) => s + o, 0);
                 if (E !== 2 * sumO) throw new Error('Datos incoherentes en ' + f);
                 const lpLig = ligs.map(([e, o]) => (e === 'H' ? 0 : 4 - o));
                 const lpC = (L - 2 * lpLig.reduce((a, b) => a + b, 0)) / 2;
-                if (!Number.isInteger(lpC) || lpC < 0) throw new Error('Pares solitarios incoherentes en ' + f);
+                if (!Number.isInteger(lpC) || lpC < 0) throw new Error('Pares de electrones solitarios incoherentes en ' + f);
                 const fam = famOf(n, lpC), geom = GEOM[fam];
                 if (!geom || geom.sn > 4) throw new Error('Geometría no permitida en ' + f);
                 const identical = ligs.every(([e, o]) => e === ligs[0][0] && o === ligs[0][1]);
+                const fcSum = (valC - 2 * lpC - sumO) + ligs.reduce((s, [e, o], i) => s + EL[e].v - 2 * lpLig[i] - o, 0);
+                if (fcSum !== charge) throw new Error('Cargas formales incoherentes en ' + f);
                 return {
-                    f, alias: alias || [], central: c, ligs, n, need, D, N, E, L, lpC, lpLig, sumO, fam, geom,
+                    f, base, charge, html: speciesHTML(base, charge), alias: alias || [], central: c, ligs, n, need, D, N, E, L, lpC, lpLig, sumO, fam, geom,
                     fcC: valC - 2 * lpC - sumO,
                     fcLig: ligs.map(([e, o], i) => EL[e].v - 2 * lpLig[i] - o),
                     hypo: need < 8 ? c : null,
@@ -2539,18 +2570,22 @@
                 };
             }
             const MOLS = DEFS.map(buildMol);
-            const normKey = s => String(s || '').toUpperCase().replace(/[\s_\-]/g, '').replace(/[₀-₉]/g, ch => String(ch.charCodeAt(0) - 0x2080));
+            const normKey = s => {   // admite NH4+, SO4 2-, SO4-2, SO4^2-, NO3⁻, subíndices y superíndices unicode
+                const map = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁺': '+', '⁻': '-', '−': '-', '–': '-', '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9' };
+                const t = String(s || '').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻−–₀₁₂₃₄₅₆₇₈₉]/g, ch => map[ch]).toUpperCase().replace(/[\s_^{}()]/g, '');
+                return t.replace(/([+-])(\d)$/, '$2$1');
+            };
             const BY_KEY = {};
             MOLS.forEach(m => { BY_KEY[normKey(m.f)] = m; m.alias.forEach(a => { BY_KEY[normKey(a)] = m; }); });
 
             /* ================= LIENZO INTERACTIVO (PASO 3) ================= */
             const S = {
                 mol: null, step: 1, ans: null, tool: 'connect', selected: null,
-                cv: { atoms: [], bonds: [], nid: 0 }, theme: 'dark'
+                cv: { atoms: [], bonds: [], nid: 0, ion: 0 }, theme: 'dark'
             };
             const cv = S.cv;
 
-            /** Reparte los pares solitarios en los huecos más amplios entre enlaces (ángulos en grados, 0º = derecha) */
+            /** Reparte los pares de electrones solitarios en los huecos más amplios entre enlaces (ángulos en grados, 0º = derecha) */
             function lonePairAngles(bondAngs, count) {
                 if (count <= 0) return [];
                 if (!bondAngs.length) return Array.from({ length: count }, (_, i) => (90 + i * 360 / count) % 360);
@@ -2592,7 +2627,8 @@
                 renderCanvas();
             }
             function theme(t) { S.theme = t; $('lw2-ws').className = 'lw2-ws lw-theme-' + t; renderCanvas(); }
-            function clearCanvas() { cv.atoms = []; cv.bonds = []; cv.nid = 0; S.selected = null; renderCanvas(); }
+            function clearCanvas() { cv.atoms = []; cv.bonds = []; cv.nid = 0; cv.ion = 0; S.selected = null; if ($('lw2-ion')) $('lw2-ion').value = '0'; renderCanvas(); }
+            function setIon(v) { cv.ion = parseInt(v, 10) || 0; renderCanvas(); }
 
             function atomClick(id) {
                 const a = cv.atoms.find(x => x.id === id); if (!a) return;
@@ -2602,8 +2638,8 @@
                 } else if (S.tool === 'lonepair') {
                     a.lp = (a.lp + 1) % 5;
                 } else if (S.tool === 'charge') {
-                    const cyc = [0, 1, 2, 3, -1, -2, -3];
-                    a.charge = cyc[(cyc.indexOf(a.charge) + 1) % cyc.length];
+                    const v = parseInt($('lw2-charge-val').value, 10) || 0;      // número y signo elegidos en el selector
+                    a.charge = (a.charge === v ? 0 : v);
                 } else {
                     if (S.selected === null) S.selected = id;
                     else {
@@ -2660,6 +2696,13 @@
                     });
                 });
 
+                if (cv.ion && cv.atoms.length) {           // carga total del ion: corchetes con la carga arriba a la derecha
+                    const NS = 'http://www.w3.org/2000/svg', xs = cv.atoms.map(a => a.x * W / 100), ys = cv.atoms.map(a => a.y * H / 100), pad = 54, t = 11;
+                    const x0 = Math.max(6, Math.min(...xs) - pad), x1 = Math.min(W - 40, Math.max(...xs) + pad), y0 = Math.max(6, Math.min(...ys) - pad), y1 = Math.min(H - 6, Math.max(...ys) + pad);
+                    const mk = d => { const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); p.setAttribute('fill', 'none'); p.setAttribute('stroke', color); p.setAttribute('stroke-width', '3'); p.setAttribute('stroke-linecap', 'round'); svg.appendChild(p); };
+                    mk(`M${x0 + t},${y0} L${x0},${y0} L${x0},${y1} L${x0 + t},${y1}`); mk(`M${x1 - t},${y0} L${x1},${y0} L${x1},${y1} L${x1 - t},${y1}`);
+                    const tx = document.createElementNS(NS, 'text'); tx.setAttribute('x', x1 + 5); tx.setAttribute('y', y0 + 6); tx.setAttribute('fill', color); tx.setAttribute('font-size', '20'); tx.setAttribute('font-weight', '800'); tx.textContent = chargeLabel(cv.ion); svg.appendChild(tx);
+                }
                 cv.atoms.forEach(a => {
                     const div = document.createElement('div');
                     div.className = 'lewis-atom' + (S.selected === a.id ? ' selected' : '');
@@ -2689,11 +2732,11 @@
             function updateCounter() {
                 const el = $('lw2-counter'); if (!el) return;
                 const bondE = cv.bonds.reduce((s, b) => s + 2 * b.order, 0), lpE = cv.atoms.reduce((s, a) => s + 2 * a.lp, 0);
-                el.textContent = `Electrones dibujados: ${bondE + lpE} (${bondE} en enlaces + ${lpE} en pares solitarios) · Átomos: ${cv.atoms.length} · Enlaces: ${cv.bonds.length}`;
+                el.textContent = `Electrones dibujados: ${bondE + lpE} (${bondE} en enlaces + ${lpE} en pares de electrones solitarios) · Átomos: ${cv.atoms.length} · Enlaces: ${cv.bonds.length}`;
             }
 
             /** Dibuja una estructura (átomos con x,y en px dentro de un viewBox 300×220) como SVG estático para el informe */
-            function structureSVG(atoms, bonds) {
+            function structureSVG(atoms, bonds, ion) {
                 const ang = {}; atoms.forEach(a => { ang[a.id] = []; });
                 let body = '';
                 bonds.forEach(b => {
@@ -2713,6 +2756,11 @@
                     });
                     if (a.charge) body += `<text x="${(a.x + 15).toFixed(1)}" y="${(a.y - 13).toFixed(1)}" font-size="11" font-weight="800" fill="#dc2626" font-family="sans-serif">${a.charge > 0 ? '+' + a.charge : '−' + Math.abs(a.charge)}</text>`;
                 });
+                if (ion && atoms.length) {
+                    const xs = atoms.map(a => a.x), ys = atoms.map(a => a.y), x0 = Math.max(4, Math.min(...xs) - 28), x1 = Math.min(280, Math.max(...xs) + 28), y0 = Math.max(4, Math.min(...ys) - 28), y1 = Math.min(216, Math.max(...ys) + 28), t = 8;
+                    body += `<path d="M${x0 + t},${y0} L${x0},${y0} L${x0},${y1} L${x0 + t},${y1}" fill="none" stroke="#1e293b" stroke-width="2.4" stroke-linecap="round"/><path d="M${x1 - t},${y0} L${x1},${y0} L${x1},${y1} L${x1 - t},${y1}" fill="none" stroke="#1e293b" stroke-width="2.4" stroke-linecap="round"/>`;
+                    body += `<text x="${(x1 + 4).toFixed(1)}" y="${(y0 + 6).toFixed(1)}" font-size="15" font-weight="800" fill="#dc2626" font-family="sans-serif">${chargeLabel(ion)}</text>`;
+                }
                 return `<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Estructura de Lewis">${body}</svg>`;
             }
             function modelSVG(m) {
@@ -2722,12 +2770,12 @@
                     atoms.push({ id: i + 1, type: e, x: 150 + 75 * Math.cos(r), y: 110 - 70 * Math.sin(r), lp: m.lpLig[i], charge: m.fcLig[i] });
                     bonds.push({ a1: 0, a2: i + 1, order: o });
                 });
-                return structureSVG(atoms, bonds);
+                return structureSVG(atoms, bonds, m.charge);
             }
             function studentSVG() {
                 const ws = $('lw2-ws'), W = ws.clientWidth || 600, H = ws.clientHeight || 360, k = Math.min(300 / W, 220 / H);
                 const atoms = cv.atoms.map(a => ({ ...a, x: 150 + (a.x * W / 100 - W / 2) * k, y: 110 + (a.y * H / 100 - H / 2) * k }));
-                return structureSVG(atoms, cv.bonds);
+                return structureSVG(atoms, cv.bonds, cv.ion);
             }
 
             /* ================= MOTOR DE EVALUACIÓN ================= */
@@ -2735,11 +2783,11 @@
             const fmtCharge = c => (c > 0 ? '+' + c : '−' + Math.abs(c));
 
             function hypoMsg(m) {
-                if (m.hypo === 'Be') return 'Excepción al octeto (hipovalencia): el Be tiene 2 e⁻ de valencia, forma 2 enlaces y se estabiliza con solo 4 e⁻ a su alrededor, sin completar el octeto y sin pares solitarios.';
-                if (m.hypo === 'B') return 'Excepción al octeto (hipovalencia): el B tiene 3 e⁻ de valencia, forma 3 enlaces y se estabiliza con solo 6 e⁻ a su alrededor, sin completar el octeto y sin pares solitarios.';
+                if (m.hypo === 'Be') return 'Excepción al octeto (hipovalencia): el Be tiene 2 e⁻ de valencia, forma 2 enlaces y se estabiliza con solo 4 e⁻ a su alrededor, sin completar el octeto y sin pares de electrones solitarios.';
+                if (m.hypo === 'B') return 'Excepción al octeto (hipovalencia): el B tiene 3 e⁻ de valencia, forma 3 enlaces y se estabiliza con solo 6 e⁻ a su alrededor, sin completar el octeto y sin pares de electrones solitarios.';
                 return '';
             }
-            const multiMsg = m => `${MULTI_TEXT}: en ${pretty(m.f)}, el ${m.central} tiene ${m.geom.sn} nubes (${bondDesc(m.central, m.ligs)}) = ${m.geom.name.toLowerCase()}.`;
+            const multiMsg = m => `${MULTI_TEXT}: en ${m.html}, el ${m.central} tiene ${m.geom.sn} nubes (${bondDesc(m.central, m.ligs)}) = ${m.geom.name.toLowerCase()}.`;
 
             function evalCfg() {
                 const m = S.mol, msgs = [], yours = [], correct = []; let ok = 0;
@@ -2760,7 +2808,7 @@
 
             function explainD(m) {
                 const g = {}; m.ligs.forEach(([e]) => { g[e] = (g[e] || 0) + 1; });
-                return `D = ${EL[m.central].v} (${m.central}) + ` + Object.keys(g).map(e => `${g[e] > 1 ? g[e] + '×' : ''}${EL[e].v} (${e})`).join(' + ') + ` = <b>${m.D}</b>`;
+                return `D = ${EL[m.central].v} (${m.central}) + ` + Object.keys(g).map(e => `${g[e] > 1 ? g[e] + '×' : ''}${EL[e].v} (${e})`).join(' + ') + (m.charge ? ` ${m.charge > 0 ? '−' : '+'} ${Math.abs(m.charge)} (por la carga ${fmtCharge(m.charge)} del ion)` : '') + ` = <b>${m.D}</b>`;
             }
             function explainN(m) {
                 const g = {}; m.ligs.forEach(([e]) => { g[e] = (g[e] || 0) + 1; });
@@ -2773,14 +2821,14 @@
                 const chk = { D: sD === m.D, N: sN === m.N, E: sE === m.E, L: sL === m.L, B: b === m.n, P: l === m.lpC };
                 const good = Object.values(chk).filter(Boolean).length;
                 const status = good === 6 ? 'ok' : good >= 3 ? 'partial' : 'bad';
-                const lpTxt = n => `${n} ${pl(n, 'par solitario', 'pares solitarios')}`;
+                const lpTxt = n => `${n} ${pl(n, 'par de electrones solitario', 'pares de electrones solitarios')}`;
 
                 if (chk.D && chk.N && chk.E && chk.L) msgs.push(`✓ Cálculo de electrones correcto: D = ${m.D}, N = ${m.N}, E = N − D = ${m.E}, L = D − E = ${m.L}.`);
                 else {
-                    if (!chk.D) msgs.push(`D (disponibles): suma de los e⁻ de valencia de todos los átomos. ${explainD(m)}`);
-                    if (!chk.N) msgs.push(`N (necesarios): cada átomo necesita 8 e⁻ (el H, 2). ${explainN(m)}`);
-                    if (!chk.E) msgs.push(`E (enlazantes) = N − D = ${m.N} − ${m.D} = <b>${m.E}</b>.` + (sE !== null && sN !== null && sD !== null && sE !== sN - sD ? ` Con tus valores de N y D, N − D da ${sN - sD}: revisa la resta.` : ''));
-                    if (!chk.L) msgs.push(`L (solitarios) = D − E = ${m.D} − ${m.E} = <b>${m.L}</b>.` + (sL !== null && sD !== null && sE !== null && sL !== sD - sE ? ` Con tus valores de D y E, D − E da ${sD - sE}: revisa la resta.` : ''));
+                    if (!chk.D) msgs.push(`D (electrones disponibles): suma de los e⁻ de valencia de todos los átomos. ${explainD(m)}`);
+                    if (!chk.N) msgs.push(`N (electrones necesarios): cada átomo necesita 8 e⁻ (el H, 2). ${explainN(m)}`);
+                    if (!chk.E) msgs.push(`E (electrones enlazantes) = N − D = ${m.N} − ${m.D} = <b>${m.E}</b>.` + (sE !== null && sN !== null && sD !== null && sE !== sN - sD ? ` Con tus valores de N y D, N − D da ${sN - sD}: revisa la resta.` : ''));
+                    if (!chk.L) msgs.push(`L (electrones solitarios) = D − E = ${m.D} − ${m.E} = <b>${m.L}</b>.` + (sL !== null && sD !== null && sE !== null && sL !== sD - sE ? ` Con tus valores de D y E, D − E da ${sD - sE}: revisa la resta.` : ''));
                     if (chk.D && chk.N && (!chk.E || !chk.L)) msgs.push('Tienes D y N bien: repasa las restas.');
                 }
                 if (chk.B && chk.P) msgs.push(`✓ ${m.n} nubes de enlace + ${lpTxt(m.lpC)} = número estérico ${m.geom.sn} (${famPretty(m.fam)}).`);
@@ -2788,16 +2836,16 @@
                     if (!chk.B) msgs.push(m.multi && b === m.sumO
                         ? `Has contado ${b} pares compartidos (e⁻ de enlace ÷ 2). Aquí hay <b>${m.n}</b> nubes de enlace.`
                         : `Nubes de enlace: <b>${m.n}</b>, una por cada átomo unido al ${m.central} (${bondDesc(m.central, m.ligs)}).`);
-                    if (!chk.P) msgs.push(`Pares solitarios en el ${m.central}: <b>${m.lpC}</b>. De los ${m.L} e⁻ solitarios, los ligandos completan primero su octeto y al ${m.central} le quedan ${2 * m.lpC} e⁻.`);
-                    msgs.push(`Número estérico = nubes de enlace + pares solitarios = ${m.geom.sn} (máximo permitido en la PAU: 4).`);
+                    if (!chk.P) msgs.push(`Pares de electrones solitarios en el ${m.central}: <b>${m.lpC}</b>. De los ${m.L} e⁻ solitarios, los ligandos completan primero su octeto y al ${m.central} le quedan ${2 * m.lpC} e⁻.`);
+                    msgs.push(`Número estérico = nubes de enlace + pares de electrones solitarios = ${m.geom.sn} (máximo permitido en la PAU: 4).`);
                 }
                 if (m.hypo) msgs.push(hypoMsg(m));
                 if (m.multi) msgs.push(multiMsg(m));
                 const dash = v => (v === null ? '—' : v);
                 return {
                     status,
-                    yours: `D = ${dash(sD)} · N = ${dash(sN)}<br>E = ${dash(sE)} · L = ${dash(sL)}<br>${dash(b)} ${pl(b, 'nube', 'nubes')} de enlace · ${dash(l)} pares solitarios`,
-                    correct: `D = ${m.D} · N = ${m.N}<br>E = ${m.E} · L = ${m.L}<br>${m.n} nubes de enlace · ${m.lpC} pares solitarios<br>Número estérico: ${m.geom.sn}`,
+                    yours: `D = ${dash(sD)} · N = ${dash(sN)}<br>E = ${dash(sE)} · L = ${dash(sL)}<br>${dash(b)} ${pl(b, 'nube', 'nubes')} de enlace · ${dash(l)} pares de electrones solitarios`,
+                    correct: `D = ${m.D} · N = ${m.N}<br>E = ${m.E} · L = ${m.L}<br>${m.n} nubes de enlace · ${m.lpC} pares de electrones solitarios<br>Número estérico: ${m.geom.sn}`,
                     msgs
                 };
             }
@@ -2806,7 +2854,7 @@
                 const m = S.mol, A = cv.atoms, B = cv.bonds, msgs = [];
                 const correct = modelSVG(m);
                 const res = (status, yoursExtra) => ({ status, yours: A.length ? studentSVG() : '—', correct, msgs });
-                if (!A.length) { msgs.push('No has dibujado ninguna estructura: añade los átomos, únelos con enlaces y coloca los pares solitarios.'); return res('bad'); }
+                if (!A.length) { msgs.push('No has dibujado ninguna estructura: añade los átomos, únelos con enlaces y coloca los pares de electrones solitarios.'); return res('bad'); }
 
                 // 1) átomos que deben aparecer
                 const need = {}, have = {};
@@ -2814,7 +2862,7 @@
                 A.forEach(a => { have[a.type] = (have[a.type] || 0) + 1; });
                 const diffs = [];
                 Object.keys({ ...need, ...have }).forEach(e => { const d = (have[e] || 0) - (need[e] || 0); if (d < 0) diffs.push(`faltan ${-d}× ${e}`); if (d > 0) diffs.push(`sobran ${d}× ${e}`); });
-                if (diffs.length) { msgs.push(`Los átomos no coinciden con la fórmula ${pretty(m.f)}: ${diffs.join(', ')}.`); return res('bad'); }
+                if (diffs.length) { msgs.push(`Los átomos no coinciden con la fórmula ${m.html}: ${diffs.join(', ')}.`); return res('bad'); }
 
                 // 2) conectividad: todos los ligandos unidos solo al átomo central
                 const deg = {}, so = {}; A.forEach(a => { deg[a.id] = 0; so[a.id] = 0; });
@@ -2824,7 +2872,7 @@
                 const ordBetween = (x, y) => { const b = B.find(b => (b.a1 === x.id && b.a2 === y.id) || (b.a1 === y.id && b.a2 === x.id)); return b ? b.order : 0; };
                 const unlinked = others.filter(a => ordBetween(C, a) === 0), extra = B.filter(b => b.a1 !== C.id && b.a2 !== C.id);
                 if (unlinked.length || extra.length) {
-                    if (unlinked.length) msgs.push(`Hay átomos sin unir al átomo central (${m.central}): ${unlinked.map(a => a.type).join(', ')}. En ${pretty(m.f)} todos los ligandos se enlazan directamente al ${m.central}.`);
+                    if (unlinked.length) msgs.push(`Hay átomos sin unir al átomo central (${m.central}): ${unlinked.map(a => a.type).join(', ')}. En ${m.html} todos los ligandos se enlazan directamente al ${m.central}.`);
                     if (extra.length) msgs.push('Has unido ligandos entre sí: en esta molécula cada ligando se une solo al átomo central.');
                     return res('bad');
                 }
@@ -2837,37 +2885,45 @@
                 const exact = sameLig && C.lp === m.lpC;
 
                 if (exact) {
-                    msgs.push(`✓ Estructura correcta: ${bondDesc(m.central, m.ligs)}${m.lpC ? ` y ${m.lpC} ${pl(m.lpC, 'par solitario', 'pares solitarios')} en el ${m.central}` : ''}.`);
+                    msgs.push(`✓ Estructura correcta: ${bondDesc(m.central, m.ligs)}${m.lpC ? ` y ${m.lpC} ${pl(m.lpC, 'par de electrones solitario', 'pares de electrones solitarios')} en el ${m.central}` : ''}.`);
                     if (m.hypo) msgs.push(hypoMsg(m));
                     if (m.multi) msgs.push(multiMsg(m));
-                    if (m.f === 'SO2' || m.f === 'O3') msgs.push('Existen dos formas resonantes equivalentes (el doble enlace puede estar en cualquiera de los dos O); cualquiera de ellas es válida.');
+                    if (new Set(m.ligs.map(l => l[1])).size > 1 && new Set(m.ligs.map(l => l[0])).size === 1) msgs.push('Existen formas resonantes equivalentes (el doble enlace puede estar en cualquiera de los átomos equivalentes); cualquiera de ellas es válida.');
                     const exp = [[m.central, m.fcC], ...m.ligs.map(([e], i) => [e, m.fcLig[i]])].filter(x => x[1] !== 0);
                     if (exp.length) {
                         const got = [[C.type, C.charge], ...others.map(a => [a.type, a.charge])].filter(x => x[1] !== 0);
                         const k = arr => arr.map(y => y.join('|')).sort().join(',');
                         msgs.push(k(exp) === k(got) ? '✓ Cargas formales correctas.' : `Cargas formales (conviene indicarlas): ${exp.map(([e, c]) => `${e} ${fmtCharge(c)}`).join(', ')}.`);
                     }
-                    return res('ok');
+                    let status = 'ok';
+                    if (m.charge !== 0 || cv.ion !== 0) {
+                        if (cv.ion === m.charge) msgs.push(`✓ Carga total del ion: ${fmtCharge(m.charge)}.`);
+                        else { status = 'partial'; msgs.push(m.charge !== 0 ? `Falta indicar la carga total del ion (<b>${fmtCharge(m.charge)}</b>) entre corchetes: usa «Carga total del ion».` : `${m.html} es una molécula neutra: la carga total debe ser 0.`); }
+                    }
+                    const marked = [C.charge, ...others.map(a => a.charge)], sumFC = marked.reduce((s, x) => s + x, 0);
+                    if (marked.some(x => x !== 0) && sumFC !== m.charge) msgs.push(`La suma de las cargas formales que has marcado (${sumFC === 0 ? '0' : fmtCharge(sumFC)}) debe coincidir con la carga total (${m.charge === 0 ? '0' : fmtCharge(m.charge)}).`);
+                    return res(status);
                 }
 
                 const totE = B.reduce((s, b) => s + 2 * b.order, 0) + A.reduce((s, a) => s + 2 * a.lp, 0);
-                if (totE !== m.D) msgs.push(`Has distribuido ${totE} e⁻ y la molécula dispone de ${m.D} e⁻ de valencia (suma de los e⁻ de valencia de todos los átomos).`);
+                if (totE !== m.D) msgs.push(`Has distribuido ${totE} e⁻ y ${m.charge ? 'el ion' : 'la molécula'} dispone de ${m.D} e⁻ (suma de los e⁻ de valencia${m.charge ? ' menos la carga' : ''}).`);
+                if (m.charge !== 0 && cv.ion !== m.charge) msgs.push(`No olvides indicar la carga total del ion (${fmtCharge(m.charge)}) con «Carga total del ion».`);
                 const target = a => (a.type === 'H' ? 2 : (a === C && m.hypo ? (m.hypo === 'Be' ? 4 : 6) : 8));
                 const bad = A.filter(a => 2 * so[a.id] + 2 * a.lp !== target(a));
                 bad.slice(0, 4).forEach(a => msgs.push(`${a.type} tiene ${2 * so[a.id] + 2 * a.lp} e⁻ a su alrededor y debería tener ${target(a)}${a === C && m.hypo ? ' (excepción al octeto)' : a.type === 'H' ? ' (el H solo admite 2)' : ' (octeto)'}.`));
                 if (m.hypo) msgs.push(hypoMsg(m));
                 const ordKey = x => `${x.el}|${x.o}`;
-                if (JSON.stringify(mine.map(ordKey).sort()) !== JSON.stringify(ref.map(ordKey).sort())) msgs.push(`Revisa los órdenes de enlace: en ${pretty(m.f)} hay ${bondDesc(m.central, m.ligs)}.`);
-                if (C.lp !== m.lpC) msgs.push(`El ${m.central} debe tener ${m.lpC} ${pl(m.lpC, 'par solitario', 'pares solitarios')} (tú has puesto ${C.lp}).`);
-                if (!sameLig && JSON.stringify(mine.map(ordKey).sort()) === JSON.stringify(ref.map(ordKey).sort())) msgs.push('Revisa los pares solitarios de los átomos ligando: cada uno debe completar su octeto.');
+                if (JSON.stringify(mine.map(ordKey).sort()) !== JSON.stringify(ref.map(ordKey).sort())) msgs.push(`Revisa los órdenes de enlace: en ${m.html} hay ${bondDesc(m.central, m.ligs)}.`);
+                if (C.lp !== m.lpC) msgs.push(`El ${m.central} debe tener ${m.lpC} ${pl(m.lpC, 'par de electrones solitario', 'pares de electrones solitarios')} (tú has puesto ${C.lp}).`);
+                if (!sameLig && JSON.stringify(mine.map(ordKey).sort()) === JSON.stringify(ref.map(ordKey).sort())) msgs.push('Revisa los pares de electrones solitarios de los átomos ligando: cada uno debe completar su octeto.');
                 if (m.multi) msgs.push(multiMsg(m));
                 return res('partial');
             }
 
             function evalGeom() {
                 const m = S.mol, g = m.geom, yours = S.ans.geom, ok = yours === g.name, msgs = [];
-                msgs.push(`${g.sn} nubes de electrones (${m.n} de enlace${m.lpC ? ` y ${m.lpC} ${pl(m.lpC, 'solitario', 'solitarios')}` : ''}) → ${famPretty(m.fam)} → <b>${g.name}</b>.`);
-                if (m.lpC > 0) msgs.push(`Los pares solitarios ocupan una nube, pero la forma de la molécula solo describe la posición de los átomos: las ${g.sn} nubes se orientan como ${g.sn === 3 ? 'un triángulo plano' : 'un tetraedro'} y la forma resultante es ${g.name.toLowerCase()}.`);
+                msgs.push(`${g.sn} nubes de electrones (${m.n} de enlace${m.lpC ? ` y ${m.lpC} ${pl(m.lpC, 'par de electrones solitario', 'pares de electrones solitarios')}` : ''}) → ${famPretty(m.fam)} → <b>${g.name}</b>.`);
+                if (m.lpC > 0) msgs.push(`Los pares de electrones solitarios ocupan una nube, pero la forma de la molécula solo describe la posición de los átomos: las ${g.sn} nubes se orientan como ${g.sn === 3 ? 'un triángulo plano' : 'un tetraedro'} y la forma resultante es ${g.name.toLowerCase()}.`);
                 if (m.multi) msgs.push(multiMsg(m));
                 if (m.hypo) msgs.push(hypoMsg(m));
                 if (!ok) {
@@ -2885,10 +2941,10 @@
                 const yours = `${rel === '<' ? '&lt;' : '='} ${isFinite(val) ? fmtNum(val) + 'º' : '—'}`;
                 msgs.push(`${status === 'ok' ? '✓ ' : ''}Ángulo de enlace esperado en ${g.name.toLowerCase()} con ${famPretty(m.fam)}: <b>${esc(g.idealTxt)}</b>.`);
                 if (g.rel === '=') {
-                    if (status !== 'ok') msgs.push(`Sin pares solitarios en el ${m.central}, todas las nubes son equivalentes y el ángulo coincide con el ideal (${esc(g.idealTxt)}).`);
-                    if (rel === '<') msgs.push(`${pretty(m.f)} no tiene pares solitarios en el ${m.central}, por lo que no hay compresión del ángulo.`);
+                    if (status !== 'ok') msgs.push(`Sin pares de electrones solitarios en el ${m.central}, todas las nubes son equivalentes y el ángulo coincide con el ideal (${esc(g.idealTxt)}).`);
+                    if (rel === '<') msgs.push(`${m.html} no tiene pares de electrones solitarios en el ${m.central}, por lo que no hay compresión del ángulo.`);
                 } else {
-                    if (rel === '=') msgs.push(`Con ${m.lpC} ${pl(m.lpC, 'par solitario', 'pares solitarios')} en el ${m.central} el ángulo no es el ideal (${fmtNum(g.angle)}º): es menor.`);
+                    if (rel === '=') msgs.push(`Con ${m.lpC} ${pl(m.lpC, 'par de electrones solitario', 'pares de electrones solitarios')} en el ${m.central} el ángulo no es el ideal (${fmtNum(g.angle)}º): es menor.`);
                     else if (isFinite(val) && val > g.angle) msgs.push(`El valor debe ser menor que ${fmtNum(g.angle)}º.`);
                     else if (isFinite(val) && val < g.low) msgs.push(`Un valor tan pequeño no es habitual: ${g.sn === 3 ? 'en el tipo AX₂E el ángulo es algo menor de 120º' : 'se toma ≈ 107º (AX₃E) o ≈ 104,5º (AX₂E₂)'}.`);
                     if (m.central === 'P' || m.central === 'S') msgs.push(`En átomos centrales más grandes (como ${m.central}) el ángulo real es aún menor (≈ 92–94º), pero en la PAU basta con indicar «${esc(g.idealTxt.replace(/\s*\(.*\)/, ''))}».`);
@@ -2902,9 +2958,9 @@
                 const msgs = [`Polaridad de los enlaces (diferencia de electronegatividad de Pauling): ${list.join('; ')}.`];
                 const gn = m.geom.name.toLowerCase();
                 if (m.lpC > 0) {
-                    msgs.push(`La geometría ${gn} es asimétrica (hay ${m.lpC} ${pl(m.lpC, 'par solitario', 'pares solitarios')} en el ${m.central}): los momentos dipolares de enlace no se anulan, μ ≠ 0 → molécula <b>polar</b>.`);
+                    msgs.push(`La geometría ${gn} es asimétrica (hay ${m.lpC} ${pl(m.lpC, 'par de electrones solitario', 'pares de electrones solitarios')} en el ${m.central}): los momentos dipolares de enlace no se anulan, μ ≠ 0 → molécula <b>polar</b>.`);
                     if (m.f === 'O3') msgs.push('Caso especial: los dos enlaces O–O son del mismo elemento, pero las cargas formales (+ en el O central, − en un O terminal) hacen que el O₃ tenga un pequeño momento dipolar (μ ≈ 0,5 D): es ligeramente polar.');
-                    if (m.f === 'PH3') msgs.push('En el PH₃ los enlaces P–H son casi apolares (ΔEN ≈ 0), pero la geometría piramidal con un par solitario en el P le da un momento dipolar pequeño: es débilmente polar.');
+                    if (m.f === 'PH3') msgs.push('En el PH₃ los enlaces P–H son casi apolares (ΔEN ≈ 0), pero la geometría piramidal con un par de electrones solitario en el P le da un momento dipolar pequeño: es débilmente polar.');
                 } else if (m.identical) {
                     msgs.push(`Los ${m.n} enlaces ${m.central}${BOND_SYM[m.ligs[0][1]]}${m.ligs[0][0]} son iguales y se reparten simétricamente (${gn}): la suma vectorial de los momentos dipolares es cero, μ = 0 → molécula <b>apolar</b>.`);
                 } else {
@@ -2914,12 +2970,12 @@
             }
 
             function evalPolarity() {
-                const m = S.mol, yours = S.ans.pol, ok = yours === (m.polar ? 'polar' : 'apolar');
-                const msgs = polarityExplain(m);
+                const m = S.mol, yours = S.ans.pol, expected = m.charge !== 0 ? 'ion' : (m.polar ? 'polar' : 'apolar'), ok = yours === expected;
+                const msgs = m.charge !== 0 ? [polarityExplain(m)[0], `${m.html} es un <b>ion poliatómico</b> (carga neta ${fmtCharge(m.charge)}): la polaridad (μ) se define para moléculas neutras. En un ion lo relevante es su carga total y su geometría (${m.geom.name.toLowerCase()}).`] : polarityExplain(m);
                 const j = String(S.ans.just || '').trim();
                 if (j) msgs.push(`Tu justificación: «${esc(j)}». Compárala con la explicación anterior: debe mencionar la geometría y la suma vectorial de los momentos dipolares.`);
-                const name = p => (p === 'polar' ? 'Polar (μ ≠ 0)' : p === 'apolar' ? 'Apolar (μ = 0)' : '—');
-                return { status: ok ? 'ok' : 'bad', yours: name(yours), correct: name(m.polar ? 'polar' : 'apolar'), msgs };
+                const name = p => (p === 'polar' ? 'Polar (μ ≠ 0)' : p === 'apolar' ? 'Apolar (μ = 0)' : p === 'ion' ? 'Es un ion (no procede)' : '—');
+                return { status: ok ? 'ok' : 'bad', yours: name(yours), correct: name(expected), msgs };
             }
 
             /* ================= FLUJO DEL ASISTENTE (cada paso: Verificar y Calcular) ================= */
@@ -2944,7 +3000,7 @@
                 }
                 return false;
             }
-            const NOT_READY = ['Escribe la configuración electrónica de todos los átomos.', 'Rellena D, N, E, L y el número de nubes y de pares solitarios.', 'Dibuja tu estructura de Lewis en el lienzo.', 'Elige la geometría molecular.', 'Escribe el ángulo de enlace aproximado.', 'Elige si la molécula es polar o apolar.'];
+            const NOT_READY = ['Escribe la configuración electrónica de todos los átomos.', 'Rellena D, N, E, L y el número de nubes y de pares de electrones solitarios.', 'Dibuja tu estructura de Lewis en el lienzo.', 'Elige la geometría molecular.', 'Escribe el ángulo de enlace aproximado.', 'Elige si la molécula es polar o apolar.'];
             const EVALS = [null, evalCfg, evalPairs, evalLewis, evalGeom, evalAngle, evalPolarity];
 
             function updateUI() {
@@ -2961,7 +3017,7 @@
                     b.classList.toggle('lw2-locked', k > S.step);
                 });
                 document.querySelectorAll('#lw2-geoms .lw2-opt').forEach(b => b.classList.toggle('lw2-on', b.dataset.v === S.ans.geom));
-                document.querySelectorAll('#lw2-wizard .lw2-opt[data-v="polar"], #lw2-wizard .lw2-opt[data-v="apolar"]').forEach(b => b.classList.toggle('lw2-on', b.dataset.v === S.ans.pol));
+                document.querySelectorAll('#lw2-wizard .lw2-opt[data-v="polar"], #lw2-wizard .lw2-opt[data-v="apolar"], #lw2-wizard .lw2-opt[data-v="ion"]').forEach(b => b.classList.toggle('lw2-on', b.dataset.v === S.ans.pol));
                 if (S.step >= 3) requestAnimationFrame(renderCanvas);
             }
             function scrollToPanel(k) {
@@ -3015,8 +3071,8 @@
                 S.mol = m; S.ans = newAnswers(); S.res = {}; S.step = 1;
                 ['lw2-D', 'lw2-N', 'lw2-E', 'lw2-L', 'lw2-bp', 'lw2-lp', 'lw2-ang', 'lw2-just'].forEach(id => { $(id).value = ''; }); $('lw2-rel').value = '=';
                 for (let k = 1; k <= 6; k++) { const b = $('lw2-fb' + k); b.innerHTML = ''; b.classList.add('lw2-hidden'); }
-                buildStep1(); clearCanvas(); setTool('connect');
-                $('lw2-molname').innerHTML = pretty(m.f); $('lw2-c2').textContent = m.central;
+                buildStep1(); clearCanvas(); setTool('connect'); $('lw2-opt-ion').classList.toggle('lw2-hidden', !m.charge);
+                $('lw2-molname').innerHTML = m.html; $('lw2-c2').textContent = m.central;
                 $('lw2-picker').classList.add('lw2-hidden'); $('lw2-report').classList.add('lw2-hidden'); $('lw2-wizard').classList.remove('lw2-hidden');
                 updateUI();
                 $('lw2-wizard').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -3038,15 +3094,15 @@
                 const pts = res.reduce((s, r) => s + (r.status === 'ok' ? 1 : r.status === 'partial' ? 0.5 : 0), 0);
                 const verdict = pts === 6 ? '¡Nota máxima! Has dominado esta molécula.' : pts >= 4 ? 'Muy bien. Repasa los pasos marcados para llegar al máximo.' : 'Revisa la explicación de cada paso y corrígelos: el resumen se actualiza al volver a verificar.';
                 const dots = res.map((r, i) => `<span class="lw2-pts" title="${STEP_TITLES[i]}">${i + 1}: ${r.status === 'ok' ? '✓' : r.status === 'partial' ? '½' : '✗'}</span>`).join(' ');
-                $('lw2-report').innerHTML = `<div class="lw2-card"><div class="lw2-score"><div class="lw2-score-n">${fmtNum(pts)}/6</div><div style="flex:1 1 14rem;min-width:0"><div style="font-weight:800;font-size:1.05rem">Resultado de ${pretty(m.f)}</div><div class="lw2-p" style="margin:.2rem 0 .4rem">${verdict}</div><div style="display:flex;flex-wrap:wrap;gap:.3rem">${dots}</div></div></div>
+                $('lw2-report').innerHTML = `<div class="lw2-card"><div class="lw2-score"><div class="lw2-score-n">${fmtNum(pts)}/6</div><div style="flex:1 1 14rem;min-width:0"><div style="font-weight:800;font-size:1.05rem">Resultado de ${m.html}</div><div class="lw2-p" style="margin:.2rem 0 .4rem">${verdict}</div><div style="display:flex;flex-wrap:wrap;gap:.3rem">${dots}</div></div></div>
                     <div class="lw2-row" style="margin-top:.75rem"><button class="lw2-btn lw2-btn-primary" onclick="LW2.retry()">🔁 Repetir desde cero</button><button class="lw2-btn" onclick="LW2.random()">🎲 Otra molécula</button><button class="lw2-btn" onclick="LW2.change()">Elegir molécula</button></div></div>
-                    <div class="lw2-card lw2-solution"><h2 class="lw2-h2"><span>Resumen modelo · ${pretty(m.f)}</span></h2>
+                    <div class="lw2-card lw2-solution"><h2 class="lw2-h2"><span>Resumen modelo · ${m.html}</span></h2>
                     <div class="lw2-sol-grid">
                         <div><b>Tipo (TRPECV)</b>${famPretty(m.fam)} · ${g.sn} nubes</div>
-                        <div><b>Pares</b>${m.n} de enlace · ${m.lpC} ${pl(m.lpC, 'solitario', 'solitarios')} en ${m.central}</div>
+                        <div><b>Pares</b>${m.n} de enlace · ${m.lpC} ${pl(m.lpC, 'par de electrones solitario', 'pares de electrones solitarios')} en ${m.central}</div>
                         <div><b>Geometría</b>${g.name}</div>
                         <div><b>Ángulo</b>${esc(g.idealTxt)}</div>
-                        <div><b>Polaridad</b>${m.polar ? 'Polar (μ ≠ 0)' : 'Apolar (μ = 0)'}</div>
+                        <div><b>Polaridad</b>${m.charge ? `Ion (carga ${fmtCharge(m.charge)})` : m.polar ? 'Polar (μ ≠ 0)' : 'Apolar (μ = 0)'}</div>
                         <div><b>Método e⁻</b>D = ${m.D} · N = ${m.N} · E = N−D = ${m.E} · L = D−E = ${m.L}</div>
                     </div>
                     <div class="lw2-cmp" style="margin-top:.75rem"><div style="grid-column:1/-1"><b class="lw2-cap">Estructura de Lewis modelo</b>${modelSVG(m)}</div></div></div>`;
@@ -3058,7 +3114,7 @@
             function init() {
                 const chips = $('lw2-chips'); chips.innerHTML = '';
                 [...MOLS].sort((a, b) => a.f.localeCompare(b.f)).forEach(m => {
-                    const b = document.createElement('button'); b.className = 'lw2-chip'; b.innerHTML = pretty(m.f); b.onclick = () => pick(m.f); chips.appendChild(b);
+                    const b = document.createElement('button'); b.className = 'lw2-chip' + (m.charge ? ' lw2-chip-ion' : ''); b.innerHTML = m.html; b.onclick = () => pick(m.f); chips.appendChild(b);
                 });
                 const gb = $('lw2-geoms'); gb.innerHTML = '';
                 GEOM_NAMES.forEach(n => { const b = document.createElement('button'); b.className = 'lw2-opt'; b.dataset.v = n; b.textContent = n; b.onclick = () => setGeom(n); gb.appendChild(b); });
@@ -3069,7 +3125,7 @@
             }
             init();
 
-            return { pick, pickFromInput, random, change, goStep, verify, addAtom, setTool, theme, clearCanvas, setGeom, setPol, retry,
+            return { pick, pickFromInput, random, change, goStep, verify, addAtom, setTool, theme, clearCanvas, setIon, setGeom, setPol, retry,
                      util: { groundConfig, parseConfig, cfgMap, sameMap } };
         })();
 
