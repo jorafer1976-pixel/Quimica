@@ -215,6 +215,21 @@
         #lewis-view .lw2-grp-label { font-size: .8rem; font-weight: 700; color: #475569; }
         #lewis-view .lw2-chip.lw2-chip-ion { background: #fef3c7; border-color: #fcd34d; color: #92400e; }
         #lewis-view .lw2-chip.lw2-chip-ion:hover { background: #fde68a; }
+        /* --- niveles, etiquetas PAU y filtros --- */
+        #lewis-view .lw2-chip.lw2-filter.lw2-on { background: #1288D9; border-color: #1288D9; color: #fff; }
+        #lewis-view .lw2-lvl { margin-top: .9rem; padding: .6rem .75rem .75rem; border: 1px solid #e2e8f0; border-radius: .85rem; background: #f8fafc; }
+        #lewis-view .lw2-lvl-ext { background: #f5f3ff; border-color: #ddd6fe; }
+        #lewis-view .lw2-lvl-t { font-weight: 800; font-size: .88rem; color: #1e293b; overflow-wrap: anywhere; }
+        #lewis-view .lw2-lvl-o { font-size: .76rem; color: #64748b; line-height: 1.4; overflow-wrap: anywhere; }
+        #lewis-view .lw2-chip { display: inline-flex; align-items: center; gap: .35rem; }
+        #lewis-view .lw2-chip.lw2-chip-ext { background: #ede9fe; border-color: #c4b5fd; color: #5b21b6; }
+        #lewis-view .lw2-pau { padding: .02rem .3rem; border-radius: .35rem; background: #f59e0b; color: #fff; font-size: .62rem; font-weight: 800; letter-spacing: .04em; }
+        #lewis-view .lw2-badges { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .45rem; }
+        #lewis-view .lw2-tg { padding: .12rem .5rem; border-radius: 999px; background: #f1f5f9; color: #475569; font-size: .7rem; font-weight: 700; }
+        #lewis-view .lw2-tg-lvl { background: #e0e7ff; color: #3730a3; }
+        #lewis-view .lw2-tg-pau { background: #fef3c7; color: #92400e; }
+        #lewis-view .lw2-tg-ext { background: #ede9fe; color: #5b21b6; }
+        #lewis-view .lw2-evalat { font-size: .75em; font-weight: 700; color: #64748b; }
         #lewis-view .lw2-cfg-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: .75rem; }
         #lewis-view .lw2-tag { display: inline-block; margin-left: .35rem; padding: .05rem .4rem; border-radius: .4rem; background: #fef3c7; color: #92400e; font-size: .68rem; font-weight: 800; }
         #lewis-view .lw2-details { margin: 0 0 .75rem; padding: .55rem .75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: .75rem; font-size: .83rem; color: #475569; line-height: 1.5; }
@@ -525,7 +540,7 @@
 
             <!-- SELECTOR DE MOLÉCULA -->
             <section id="lw2-picker" class="lw2-card">
-                <h2 class="lw2-h2"><span>Elige una molécula o un ion</span></h2>
+                <h2 class="lw2-h2"><span>Elige una molécula o un ion para practicar</span></h2>
                 <p class="lw2-p">Escribe una fórmula (p. ej. <code>H2O</code>, <code>CO2</code>, <code>BF3</code>, o un ion como <code>NH4+</code>, <code>NO3-</code>, <code>SO4 2-</code>) o pulsa una de la lista (en ámbar, los iones). No se muestra la solución hasta que hayas respondido los 6 pasos.</p>
                 <div class="lw2-row">
                     <label class="lw2-label lw2-grow">Fórmula
@@ -534,13 +549,15 @@
                     <button class="lw2-btn lw2-btn-primary" onclick="LW2.pickFromInput()">Empezar</button>
                     <button class="lw2-btn" onclick="LW2.random()">🎲 Aleatoria</button>
                 </div>
-                <div id="lw2-chips" class="lw2-chips"></div>
+                <div id="lw2-filters" class="lw2-chips"></div>
+                <p class="lw2-tip" style="margin:.6rem 0 0"><b>⭐ PAU</b> = molécula que aparece en exámenes de PAU (etiquetas Madrid · C. Valenciana de la base de datos). <b>Ampliación</b> = octeto expandido, fuera de los criterios de la PAU CV (máximo 4 nubes).</p>
+                <div id="lw2-chips" style="margin-top:.5rem"></div>
             </section>
 
             <!-- ASISTENTE -->
             <section id="lw2-wizard" class="lw2-hidden" style="display:flex;flex-direction:column;gap:1rem;">
                 <div class="lw2-card lw2-bar">
-                    <span class="lw2-pill">Molécula: <span id="lw2-molname"></span></span>
+                    <div style="min-width:0;flex:1 1 18rem"><span class="lw2-pill">Molécula: <span id="lw2-molname"></span></span><div id="lw2-badges" class="lw2-badges"></div></div>
                     <button class="lw2-btn" onclick="LW2.change()">Cambiar molécula</button>
                 </div>
 
@@ -564,7 +581,7 @@
 
                 <!-- PASO 2 -->
                 <div class="lw2-card lw2-panel lw2-hidden" data-k="2">
-                    <h2 class="lw2-h2"><span class="lw2-num">2</span><span>Electrones y nubes alrededor del átomo central (<span id="lw2-c2"></span>)</span></h2>
+                    <h2 class="lw2-h2"><span class="lw2-num">2</span><span>Electrones y nubes alrededor del <span id="lw2-c2lab">átomo central</span> (<span id="lw2-c2"></span>)</span></h2>
                     <p class="lw2-p">Calcula los electrones de la molécula y después indica cuántas nubes de enlace y cuántos pares de electrones solitarios rodean al átomo central.</p>
                     <details class="lw2-details"><summary>Pista</summary>
                         <b>D</b> = suma de los e⁻ de valencia de todos los átomos <b>− la carga</b> si es un ion (un anión aporta e⁻ extra, un catión pierde) · <b>N</b> = e⁻ necesarios (H: 2, Be: 4, B: 6, resto: 8) · <b>E = N − D</b> (e⁻ en enlaces) · <b>L = D − E</b> (e⁻ solitarios).<br>Para la TRPECV, un enlace sencillo, doble o triple cuenta siempre como <b>una sola nube</b>.</details>
@@ -2449,9 +2466,9 @@
                 H:  { z: 1,  v: 1, en: 2.20 }, Be: { z: 4,  v: 2, en: 1.57 }, B:  { z: 5,  v: 3, en: 2.04 },
                 C:  { z: 6,  v: 4, en: 2.55 }, N:  { z: 7,  v: 5, en: 3.04 }, O:  { z: 8,  v: 6, en: 3.44 },
                 F:  { z: 9,  v: 7, en: 3.98 }, Si: { z: 14, v: 4, en: 1.90 }, P:  { z: 15, v: 5, en: 2.19 },
-                S:  { z: 16, v: 6, en: 2.58 }, Cl: { z: 17, v: 7, en: 3.16 }
+                S:  { z: 16, v: 6, en: 2.58 }, Cl: { z: 17, v: 7, en: 3.16 }, I:  { z: 53, v: 7, en: 2.66 }, Xe: { z: 54, v: 8, en: 2.60 }
             };
-            const ORB_ORDER = [[1, 's', 2], [2, 's', 2], [2, 'p', 6], [3, 's', 2], [3, 'p', 6], [4, 's', 2], [3, 'd', 10], [4, 'p', 6]];
+            const ORB_ORDER = [[1, 's', 2], [2, 's', 2], [2, 'p', 6], [3, 's', 2], [3, 'p', 6], [4, 's', 2], [3, 'd', 10], [4, 'p', 6], [5, 's', 2], [4, 'd', 10], [5, 'p', 6]];
             const CAP = { s: 2, p: 6, d: 10, f: 14 };
 
             function groundConfig(z) {
@@ -2466,10 +2483,10 @@
             /** Interpreta lo que escribe el alumno: "1s2 2s2 2p2", "1s²2s²2p²", "[He] 2s2 2p2"... */
             function parseConfig(raw) {
                 const SUP = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9' };
-                const CORE = { he: '1s2', ne: '1s22s22p6', ar: '1s22s22p63s23p6' };
+                const CORE = { he: '1s2', ne: '1s22s22p6', ar: '1s22s22p63s23p6', kr: '1s22s22p63s23p64s23d104p6' };
                 let t = String(raw || '').toLowerCase().replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, c => SUP[c]).replace(/[\s^_{}.,·\-]/g, '');
                 if (!t) return { ok: false, error: 'empty' };
-                t = t.replace(/\[(he|ne|ar)\]/g, (m, g) => CORE[g]);
+                t = t.replace(/\[(he|ne|ar|kr)\]/g, (m, g) => CORE[g]);
                 if (/[^0-9spdf]/.test(t)) return { ok: false, error: 'format' };
                 const re = /(\d)([spdf])(\d+?)(?=\d[spdf]|$)/g;
                 const map = {}; let pos = 0, total = 0, m;
@@ -2485,47 +2502,119 @@
             }
             const sameMap = (a, b) => { const ka = Object.keys(a), kb = Object.keys(b); return ka.length === kb.length && ka.every(k => a[k] === b[k]); };
 
-            /* ================= TABLA DE GEOMETRÍAS PERMITIDAS (PAU C. VALENCIANA, nº estérico ≤ 4) ================= */
+            /* ================= TABLA DE GEOMETRÍAS ================= */
+            // Núcleo PAU Comunidad Valenciana: número estérico ≤ 4. Además: diatómicas y AMPLIACIÓN (ext) con octeto expandido.
             const GEOM = {
                 'AX2':   { name: 'Lineal',             angle: 180,   rel: '=', idealTxt: '180º',                 sn: 2, b: 2, l: 0, dirs: [180, 0],            low: 179 },
                 'AX3':   { name: 'Triangular plana',   angle: 120,   rel: '=', idealTxt: '120º',                 sn: 3, b: 3, l: 0, dirs: [90, 210, 330],     low: 119 },
                 'AX2E':  { name: 'Angular',            angle: 120,   rel: '<', idealTxt: '< 120º',               sn: 3, b: 2, l: 1, dirs: [210, 330],         low: 105 },
                 'AX4':   { name: 'Tetraédrica',        angle: 109.5, rel: '=', idealTxt: '109,5º',               sn: 4, b: 4, l: 0, dirs: [90, 0, 270, 180],  low: 108.5 },
                 'AX3E':  { name: 'Piramidal trigonal', angle: 109.5, rel: '<', idealTxt: '< 109,5º (≈ 107º)',    sn: 4, b: 3, l: 1, dirs: [205, 270, 335],    low: 90 },
-                'AX2E2': { name: 'Angular',            angle: 109.5, rel: '<', idealTxt: '< 109,5º (≈ 104,5º)',  sn: 4, b: 2, l: 2, dirs: [218, 322],         low: 90 }
+                'AX2E2': { name: 'Angular',            angle: 109.5, rel: '<', idealTxt: '< 109,5º (≈ 104,5º)',  sn: 4, b: 2, l: 2, dirs: [218, 322],         low: 90 },
+                // moléculas diatómicas: solo hay dos átomos, no hay ángulo
+                'AX':    { name: 'Lineal', angle: null, rel: 'na', idealTxt: 'No procede (molécula diatómica)', sn: 1, b: 1, l: 0, dirs: [0], dia: true },
+                'AXE':   { name: 'Lineal', angle: null, rel: 'na', idealTxt: 'No procede (molécula diatómica)', sn: 2, b: 1, l: 1, dirs: [0], dia: true },
+                'AXE2':  { name: 'Lineal', angle: null, rel: 'na', idealTxt: 'No procede (molécula diatómica)', sn: 3, b: 1, l: 2, dirs: [0], dia: true },
+                'AXE3':  { name: 'Lineal', angle: null, rel: 'na', idealTxt: 'No procede (molécula diatómica)', sn: 4, b: 1, l: 3, dirs: [0], dia: true },
+                // AMPLIACIÓN (octeto expandido, más de 4 nubes): fuera de los criterios de la PAU CV
+                'AX5':   { name: 'Bipirámide trigonal', angle: 90,  rel: '=', accept: [['=', 89, 91], ['=', 119, 121]], idealTxt: '90º y 120º', sn: 5, b: 5, l: 0, dirs: [90, 270, 180, 30, 330], ext: true },
+                'AX6':   { name: 'Octaédrica',          angle: 90,  rel: '=', accept: [['=', 89, 91]], idealTxt: '90º', sn: 6, b: 6, l: 0, dirs: [90, 30, 330, 270, 210, 150], ext: true },
+                'AX4E':  { name: 'Balancín (see-saw)',  angle: 120, rel: '<', accept: [['<', 85, 120], ['<', 160, 180]], idealTxt: '< 120º y < 180º (≈ 102º y 173º)', sn: 5, b: 4, l: 1, dirs: [90, 270, 200, 340], ext: true },
+                'AX3E2': { name: 'Forma de T',          angle: 90,  rel: '<', accept: [['<', 80, 90]], idealTxt: '< 90º (≈ 87,5º)', sn: 5, b: 3, l: 2, dirs: [90, 270, 180], ext: true },
+                'AX4E2': { name: 'Plana cuadrada',      angle: 90,  rel: '=', accept: [['=', 89, 91]], idealTxt: '90º', sn: 6, b: 4, l: 2, dirs: [90, 0, 270, 180], ext: true },
+                'AX2E3': { name: 'Lineal',              angle: 180, rel: '=', idealTxt: '180º', sn: 5, b: 2, l: 3, dirs: [180, 0], low: 179, ext: true }
             };
             const GEOM_NAMES = ['Lineal', 'Triangular plana', 'Angular', 'Piramidal trigonal', 'Tetraédrica'];
-            const famOf = (b, l) => 'AX' + b + (l > 0 ? 'E' + (l > 1 ? l : '') : '');
+            const GEOM_NAMES_EXT = ['Bipirámide trigonal', 'Octaédrica', 'Balancín (see-saw)', 'Forma de T', 'Plana cuadrada'];
+            const famOf = (b, l) => 'AX' + (b > 1 ? b : '') + (l > 0 ? 'E' + (l > 1 ? l : '') : '');
             const famPretty = f => f.replace(/\d+/g, m => String(m).replace(/\d/g, d => '₀₁₂₃₄₅₆₇₈₉'[d]));
+            const SHAPE_OF = { 3: 'un triángulo plano', 4: 'un tetraedro', 5: 'una bipirámide trigonal', 6: 'un octaedro' };
 
-            /* ================= BASE DE DATOS DE MOLÉCULAS TIPO ================= */
-            // [fórmula, átomo central, [[ligando, orden de enlace], ...], e⁻ que necesita el central (8 por defecto), alias]
-            const H1 = ['H', 1], F1 = ['F', 1], Cl1 = ['Cl', 1];
+            /* ================= BASE DE DATOS DE MOLÉCULAS Y IONES ================= */
+            // [fórmula, átomo central, [[ligando, orden de enlace], ...], e⁻ que necesita el central (8 por defecto), alias, carga]
+            const H1 = ['H', 1], F1 = ['F', 1], Cl1 = ['Cl', 1], O1 = ['O', 1];
             const DEFS = [
+                // NIVEL 1 · diatómicas
+                ['H2', 'H', [H1], 2], ['Cl2', 'Cl', [Cl1], 8], ['HCl', 'Cl', [H1], 8], ['O2', 'O', [['O', 2]], 8], ['N2', 'N', [['N', 3]], 8],
+                ['CO', 'C', [['O', 3]], 8], ['CN', 'C', [['N', 3]], 8, [], -1],
                 // AX2 · lineal
                 ['BeH2', 'Be', [H1, H1], 4], ['BeF2', 'Be', [F1, F1], 4], ['BeCl2', 'Be', [Cl1, Cl1], 4],
-                ['CO2', 'C', [['O', 2], ['O', 2]], 8], ['HCN', 'C', [H1, ['N', 3]], 8],
+                ['CO2', 'C', [['O', 2], ['O', 2]], 8], ['HCN', 'C', [H1, ['N', 3]], 8], ['CS2', 'C', [['S', 2], ['S', 2]], 8],
                 // AX3 · triangular plana
                 ['BH3', 'B', [H1, H1, H1], 6], ['BF3', 'B', [F1, F1, F1], 6], ['BCl3', 'B', [Cl1, Cl1, Cl1], 6],
                 ['H2CO', 'C', [['O', 2], H1, H1], 8, ['CH2O', 'HCHO']],
                 // AX2E · angular < 120º
                 ['SO2', 'S', [['O', 2], ['O', 1]], 8], ['O3', 'O', [['O', 2], ['O', 1]], 8],
+                // AX3 resonante (octeto, con cargas formales)
+                ['SO3', 'S', [['O', 2], ['O', 1], ['O', 1]], 8],
                 // IONES (regla del octeto, enlaces sencillos y cargas formales; máximo 4 nubes)
-                ['NO2', 'N', [['O', 2], ['O', 1]], 8, [], -1], ['ClO2', 'Cl', [['O', 1], ['O', 1]], 8, [], -1], ['NH2', 'N', [H1, H1], 8, [], -1],
-                ['NO3', 'N', [['O', 2], ['O', 1], ['O', 1]], 8, [], -1], ['CO3', 'C', [['O', 2], ['O', 1], ['O', 1]], 8, [], -2],
-                ['H3O', 'O', [H1, H1, H1], 8, [], 1], ['SO3', 'S', [['O', 1], ['O', 1], ['O', 1]], 8, [], -2],
-                ['NH4', 'N', [H1, H1, H1, H1], 8, [], 1], ['SO4', 'S', [['O', 1], ['O', 1], ['O', 1], ['O', 1]], 8, [], -2],
-                ['PO4', 'P', [['O', 1], ['O', 1], ['O', 1], ['O', 1]], 8, [], -3], ['ClO4', 'Cl', [['O', 1], ['O', 1], ['O', 1], ['O', 1]], 8, [], -1],
-                ['BF4', 'B', [F1, F1, F1, F1], 8, [], -1],
+                ['NO2', 'N', [['O', 2], ['O', 1]], 8, [], -1], ['ClO2', 'Cl', [O1, O1], 8, [], -1], ['NH2', 'N', [H1, H1], 8, [], -1],
+                ['NO3', 'N', [['O', 2], O1, O1], 8, [], -1], ['CO3', 'C', [['O', 2], O1, O1], 8, [], -2],
+                ['H3O', 'O', [H1, H1, H1], 8, [], 1], ['SO3', 'S', [O1, O1, O1], 8, [], -2], ['ClO3', 'Cl', [O1, O1, O1], 8, [], -1],
+                ['NH4', 'N', [H1, H1, H1, H1], 8, [], 1], ['SO4', 'S', [O1, O1, O1, O1], 8, [], -2],
+                ['PO4', 'P', [O1, O1, O1, O1], 8, [], -3], ['ClO4', 'Cl', [O1, O1, O1, O1], 8, [], -1],
+                ['BF4', 'B', [F1, F1, F1, F1], 8, [], -1], ['NO2', 'N', [['O', 2], ['O', 2]], 8, [], 1], ['N3', 'N', [['N', 2], ['N', 2]], 8, [], -1],
                 // AX4 · tetraédrica
-                ['CH4', 'C', [H1, H1, H1, H1], 8], ['SiH4', 'Si', [H1, H1, H1, H1], 8], ['CCl4', 'C', [Cl1, Cl1, Cl1, Cl1], 8],
+                ['CH4', 'C', [H1, H1, H1, H1], 8], ['SiH4', 'Si', [H1, H1, H1, H1], 8], ['CCl4', 'C', [Cl1, Cl1, Cl1, Cl1], 8], ['CF4', 'C', [F1, F1, F1, F1], 8],
                 ['SiF4', 'Si', [F1, F1, F1, F1], 8], ['CH3Cl', 'C', [Cl1, H1, H1, H1], 8], ['CHCl3', 'C', [H1, Cl1, Cl1, Cl1], 8],
                 // AX3E · piramidal trigonal
                 ['NH3', 'N', [H1, H1, H1], 8], ['PH3', 'P', [H1, H1, H1], 8], ['NF3', 'N', [F1, F1, F1], 8],
                 ['NCl3', 'N', [Cl1, Cl1, Cl1], 8], ['PCl3', 'P', [Cl1, Cl1, Cl1], 8],
                 // AX2E2 · angular < 109,5º
-                ['H2O', 'O', [H1, H1], 8], ['H2S', 'S', [H1, H1], 8], ['OF2', 'O', [F1, F1], 8], ['Cl2O', 'O', [Cl1, Cl1], 8, ['OCl2']]
+                ['H2O', 'O', [H1, H1], 8], ['H2S', 'S', [H1, H1], 8], ['OF2', 'O', [F1, F1], 8], ['Cl2O', 'O', [Cl1, Cl1], 8, ['OCl2']],
+                // AMPLIACIÓN · octeto expandido (más de 4 nubes; fuera de la PAU CV)
+                ['PCl5', 'P', [Cl1, Cl1, Cl1, Cl1, Cl1], 10], ['SF6', 'S', [F1, F1, F1, F1, F1, F1], 12], ['SF4', 'S', [F1, F1, F1, F1], 10],
+                ['ClF3', 'Cl', [F1, F1, F1], 10], ['XeF4', 'Xe', [F1, F1, F1, F1], 12], ['XeF2', 'Xe', [F1, F1], 10], ['I3', 'I', [['I', 1], ['I', 1]], 10, [], -1]
             ];
+            // Moléculas con varios átomos «centrales» (orgánicas): se evalúa la geometría alrededor de un átomo concreto
+            // atoms: [elemento, [x, y]] (coordenadas del dibujo modelo, viewBox 300×220) · bonds: [i, j, orden]
+            const GRAPHS = [
+                { f: 'C2H4', base: 'C2H4', ev: 0, label: 'C', atoms: [['C', [110, 110]], ['C', [190, 110]], ['H', [70, 60]], ['H', [70, 160]], ['H', [230, 60]], ['H', [230, 160]]], bonds: [[0, 1, 2], [0, 2, 1], [0, 3, 1], [1, 4, 1], [1, 5, 1]], alias: [] },
+                { f: 'C2H2', base: 'C2H2', ev: 0, label: 'C', atoms: [['C', [108, 110]], ['C', [192, 110]], ['H', [48, 110]], ['H', [252, 110]]], bonds: [[0, 1, 3], [0, 2, 1], [1, 3, 1]], alias: [] },
+                { f: 'CH3OH(C)', base: 'CH3OH', ev: 0, label: 'C', atoms: [['C', [105, 105]], ['O', [190, 105]], ['H', [105, 40]], ['H', [55, 150]], ['H', [140, 160]], ['H', [238, 145]]], bonds: [[0, 1, 1], [0, 2, 1], [0, 3, 1], [0, 4, 1], [1, 5, 1]], alias: ['CH3OH'] },
+                { f: 'CH3OH(O)', base: 'CH3OH', ev: 1, label: 'O', atoms: [['C', [105, 105]], ['O', [190, 105]], ['H', [105, 40]], ['H', [55, 150]], ['H', [140, 160]], ['H', [238, 145]]], bonds: [[0, 1, 1], [0, 2, 1], [0, 3, 1], [0, 4, 1], [1, 5, 1]], alias: [] }
+            ];
+
+            // Metadatos del documento «Base de Datos de Geometría de Lewis y TRPECV»: [nombre, nivel, etiqueta PAU, otras etiquetas]
+            const META = {
+                'H2': ['Hidrógeno', 1, '', ['Iniciación']], 'Cl2': ['Cloro', 1, '', ['Iniciación']], 'HCl': ['Cloruro de hidrógeno (ácido clorhídrico)', 1, '', ['Iniciación']],
+                'O2': ['Oxígeno', 1, '', ['Enlace doble']], 'N2': ['Nitrógeno', 1, '', ['Enlace triple']], 'CO': ['Monóxido de carbono', 1, '', ['Cargas formales']], 'CN-': ['Ion cianuro', 1, '', ['Ion', 'Cargas formales']],
+                'CH4': ['Metano', 2, 'Madrid · C. Valenciana', ['Clásico']], 'CCl4': ['Tetracloruro de carbono', 2, 'Madrid · C. Valenciana', ['Clásico']], 'CF4': ['Tetrafluoruro de carbono', 2, 'Madrid · C. Valenciana', ['Clásico']],
+                'NH3': ['Amoníaco', 2, 'Madrid · C. Valenciana', ['Clásico']], 'NF3': ['Trifluoruro de nitrógeno', 2, 'Madrid · C. Valenciana', []], 'PCl3': ['Tricloruro de fósforo', 2, 'Madrid · C. Valenciana', []],
+                'H2O': ['Agua', 2, 'Madrid · C. Valenciana', ['Clásico']], 'H2S': ['Sulfuro de hidrógeno', 2, 'Madrid · C. Valenciana', []], 'OF2': ['Difluoruro de oxígeno', 2, 'Madrid · C. Valenciana', []],
+                'CH3Cl': ['Clorometano', 2, '', ['Asimetría', 'Polaridad']], 'CO2': ['Dióxido de carbono', 2, 'Madrid · C. Valenciana', ['Clásico']], 'HCN': ['Cianuro de hidrógeno', 2, 'PAU', ['Enlace triple']],
+                'CS2': ['Disulfuro de carbono', 2, '', ['Frecuente']], 'SiH4': ['Silano', 2, '', ['Práctica extra']], 'SiF4': ['Tetrafluoruro de silicio', 2, 'PAU', ['Práctica extra']],
+                'CHCl3': ['Triclorometano (cloroformo)', 2, '', ['Polaridad', 'Práctica extra']], 'NCl3': ['Tricloruro de nitrógeno', 2, '', ['Práctica extra']], 'PH3': ['Fosfano (fosfina)', 2, 'PAU', ['Práctica extra']], 'Cl2O': ['Monóxido de dicloro', 2, '', ['Práctica extra']],
+                'BeCl2': ['Dicloruro de berilio', 3, 'Madrid · C. Valenciana', ['Hipovalente']], 'BeF2': ['Difluoruro de berilio', 3, 'Madrid · C. Valenciana', ['Hipovalente']], 'BF3': ['Trifluoruro de boro', 3, 'Madrid · C. Valenciana', ['Hipovalente']],
+                'BCl3': ['Tricloruro de boro', 3, 'Madrid · C. Valenciana', ['Hipovalente']], 'BH3': ['Borano', 3, '', ['Hipovalente']], 'BeH2': ['Hidruro de berilio', 3, '', ['Hipovalente', 'Práctica extra']],
+                'SO2': ['Dióxido de azufre', 4, 'Madrid · C. Valenciana', ['Resonancia']], 'SO3': ['Trióxido de azufre', 4, 'Madrid · C. Valenciana', ['Resonancia']], 'CO32-': ['Ion carbonato', 4, '', ['Resonancia', 'Ion']],
+                'NO3-': ['Ion nitrato', 4, '', ['Resonancia', 'Ion']], 'NO2-': ['Ion nitrito', 4, '', ['Resonancia', 'Ion']], 'NH4+': ['Ion amonio', 4, '', ['Ion', 'Enlace dativo']],
+                'H3O+': ['Ion hidronio (oxonio)', 4, '', ['Ion', 'Enlace dativo']], 'O3': ['Ozono', 4, 'PAU', ['Resonancia']],
+                'NH2-': ['Ion amiduro', 4, '', ['Ion', 'Práctica extra']], 'ClO2-': ['Ion clorito', 4, '', ['Ion', 'Práctica extra']], 'SO32-': ['Ion sulfito', 4, '', ['Ion', 'Práctica extra']], 'SO42-': ['Ion sulfato', 4, '', ['Ion', 'Teoría']],
+                'PO43-': ['Ion fosfato', 4, '', ['Ion', 'Práctica extra']], 'ClO4-': ['Ion perclorato', 4, '', ['Ion', 'Práctica extra']], 'BF4-': ['Ion tetrafluoroborato', 4, '', ['Ion', 'Enlace dativo']], 'ClO3-': ['Ion clorato', 4, '', ['Ion', 'Teoría']],
+                'NO2+': ['Ion nitronio', 4, '', ['Ion', 'Teoría']], 'N3-': ['Ion azida', 4, '', ['Ion', 'Teoría']],
+                'PCl5': ['Pentacloruro de fósforo', 5, '', ['Octeto expandido']], 'SF6': ['Hexafluoruro de azufre', 5, '', ['Octeto expandido']], 'SF4': ['Tetrafluoruro de azufre', 5, '', ['Octeto expandido']],
+                'ClF3': ['Trifluoruro de cloro', 5, '', ['Octeto expandido']], 'XeF4': ['Tetrafluoruro de xenón', 5, '', ['Octeto expandido']], 'I3-': ['Ion triyoduro', 5, '', ['Octeto expandido', 'Ion']], 'XeF2': ['Difluoruro de xenón', 5, '', ['Octeto expandido']],
+                'C2H4': ['Eteno (etileno)', 6, 'PAU', ['Orgánica']], 'C2H2': ['Etino (acetileno)', 6, 'PAU', ['Orgánica']], 'H2CO': ['Metanal (formaldehído)', 6, 'PAU', ['Orgánica']],
+                'CH3OH(C)': ['Metanol', 6, 'PAU', ['Orgánica']], 'CH3OH(O)': ['Metanol', 6, 'PAU', ['Orgánica']]
+            };
+            const LEVELS = {
+                1: ['Nivel 1 · Iniciación: diatómicas', 'Cómputo de electrones de valencia y enlaces covalentes sencillos y múltiples (no hay átomo central ni ángulo).'],
+                2: ['Nivel 2 · Octeto estricto (núcleo PAU)', 'Moléculas sencillas que cumplen la regla del octeto, con y sin pares de electrones solitarios.'],
+                3: ['Nivel 3 · Hipovalencia (imprescindible en la PAU)', 'Átomos centrales (Be, B) que se estabilizan con menos de 8 electrones.'],
+                4: ['Nivel 4 · Resonancia, cargas e iones (puntúa alto en la PAU)', 'Deslocalización electrónica, cargas formales y carga neta del ion.'],
+                5: ['Nivel 5 · Ampliación: octeto expandido (fuera de la PAU CV)', 'El átomo central acomoda 10 o 12 electrones (más de 4 nubes). Los criterios de la PAU CV se limitan a 4 nubes.'],
+                6: ['Nivel 6 · Orgánicas sencillas (PAU)', 'Geometría alrededor de un átomo concreto de carbono u oxígeno.']
+            };
+            const POLAR_OVR = { 'XeF4': false, 'XeF2': false };
+            const POLAR_NOTE = {
+                'XeF4': 'Aunque el Xe tiene 2 pares de electrones solitarios, la geometría plana cuadrada es simétrica: los 4 momentos dipolares de enlace se anulan, μ = 0.',
+                'XeF2': 'Aunque el Xe tiene 3 pares de electrones solitarios, la geometría lineal es simétrica: los 2 momentos dipolares se anulan, μ = 0.',
+                'C2H4': 'La molécula es plana y simétrica: los momentos dipolares de los enlaces C–H se anulan entre sí, μ = 0.',
+                'C2H2': 'La molécula es lineal y simétrica: los momentos dipolares de los enlaces C–H se anulan, μ = 0.',
+                'CH3OH(C)': 'La molécula es asimétrica: los enlaces C–O y O–H son polares y sus momentos dipolares no se anulan, μ ≠ 0.',
+                'CH3OH(O)': 'La molécula es asimétrica: los enlaces C–O y O–H son polares y sus momentos dipolares no se anulan, μ ≠ 0.'
+            };
             const BOND_NAME = { 1: 'sencillo', 2: 'doble', 3: 'triple' };
             const BOND_SYM = { 1: '–', 2: '=', 3: '≡' };
 
@@ -2537,10 +2626,23 @@
                     return `${n} enlace${n > 1 ? 's' : ''} ${BOND_NAME[o]}${n > 1 ? 's' : ''} ${c}${BOND_SYM[o]}${e}`;
                 }).join(' + ');
             }
+            function bondDescGraph(G) {   // descripción de todos los enlaces de una molécula con varios centros
+                const g = {};
+                G.bonds.forEach(([a, b, o]) => { const p = [G.atoms[a][0], G.atoms[b][0]].sort().join(BOND_SYM[o]), k = p + '|' + o; g[k] = (g[k] || 0) + 1; });
+                return Object.keys(g).sort((x, y) => y.split('|')[1] - x.split('|')[1]).map(k => { const [p, o] = k.split('|'), n = g[k]; return `${n} enlace${n > 1 ? 's' : ''} ${BOND_NAME[o]}${n > 1 ? 's' : ''} ${p}`; }).join(' + ');
+            }
 
             const chargeKey = q => (q ? (Math.abs(q) > 1 ? Math.abs(q) : '') + (q > 0 ? '+' : '-') : '');
             const speciesHTML = (base, q) => pretty(base) + (q ? `<sup>${Math.abs(q) > 1 ? Math.abs(q) : ''}${q > 0 ? '+' : '−'}</sup>` : '');
             const chargeLabel = q => (Math.abs(q) > 1 ? Math.abs(q) : '') + (q > 0 ? '+' : '−');
+            function attachMeta(m) {
+                const mt = META[m.f] || [m.f, 4, '', []];
+                m.name = mt[0]; m.nivel = mt[1]; m.pauSrc = mt[2]; m.pau = !!mt[2]; m.tags = mt[3];
+                m.ext = !!m.geom.ext; m.dia = !!m.geom.dia;
+                if (m.f in POLAR_OVR) m.polar = POLAR_OVR[m.f];
+                m.polarNote = POLAR_NOTE[m.f] || '';
+                return m;
+            }
             function buildMol(def) {
                 const [base, c, ligs, centralNeed, alias, charge = 0] = def;
                 const f = base + chargeKey(charge);
@@ -2554,22 +2656,47 @@
                 const lpC = (L - 2 * lpLig.reduce((a, b) => a + b, 0)) / 2;
                 if (!Number.isInteger(lpC) || lpC < 0) throw new Error('Pares de electrones solitarios incoherentes en ' + f);
                 const fam = famOf(n, lpC), geom = GEOM[fam];
-                if (!geom || geom.sn > 4) throw new Error('Geometría no permitida en ' + f);
+                if (!geom) throw new Error('Geometría no definida en ' + f);
                 const identical = ligs.every(([e, o]) => e === ligs[0][0] && o === ligs[0][1]);
                 const fcSum = (valC - 2 * lpC - sumO) + ligs.reduce((s, [e, o], i) => s + EL[e].v - 2 * lpLig[i] - o, 0);
                 if (fcSum !== charge) throw new Error('Cargas formales incoherentes en ' + f);
-                return {
+                const dia = n === 1;
+                return attachMeta({
                     f, base, charge, html: speciesHTML(base, charge), alias: alias || [], central: c, ligs, n, need, D, N, E, L, lpC, lpLig, sumO, fam, geom,
                     fcC: valC - 2 * lpC - sumO,
                     fcLig: ligs.map(([e, o], i) => EL[e].v - 2 * lpLig[i] - o),
-                    hypo: need < 8 ? c : null,
+                    hypo: (need < 8 && (c === 'Be' || c === 'B')) ? c : null,
+                    expanded: need > 8,
                     multi: ligs.some(([, o]) => o > 1),
                     identical,
-                    polar: lpC > 0 || !identical,
+                    polar: dia ? ligs[0][0] !== c : (lpC > 0 || !identical),
                     elements: [c, ...new Set(ligs.map(l => l[0]).filter(e => e !== c))]
-                };
+                });
             }
-            const MOLS = DEFS.map(buildMol);
+            function buildGraph(def) {
+                const els = def.atoms.map(a => a[0]), B = def.bonds, nA = els.length;
+                const sumA = new Array(nA).fill(0); B.forEach(([a, b, o]) => { sumA[a] += o; sumA[b] += o; });
+                const needA = els.map(e => (e === 'H' ? 2 : 8));
+                const D = els.reduce((s, e) => s + EL[e].v, 0), N = needA.reduce((a, b) => a + b, 0), E = N - D, L = D - E;
+                if (E !== 2 * B.reduce((s, b) => s + b[2], 0)) throw new Error('Datos incoherentes en ' + def.f);
+                const lp = els.map((e, i) => needA[i] / 2 - sumA[i]);
+                if (lp.some(x => !Number.isInteger(x) || x < 0)) throw new Error('Pares incoherentes en ' + def.f);
+                const fc = els.map((e, i) => EL[e].v - 2 * lp[i] - sumA[i]);
+                if (fc.reduce((a, b) => a + b, 0) !== 0) throw new Error('Cargas incoherentes en ' + def.f);
+                const ev = def.ev, nb = B.filter(b => b[0] === ev || b[1] === ev).map(b => ({ idx: b[0] === ev ? b[1] : b[0], o: b[2] }));
+                const n = nb.length, lpC = lp[ev], fam = famOf(n, lpC), geom = GEOM[fam];
+                if (!geom) throw new Error('Geometría no definida en ' + def.f);
+                const ligs = nb.map(x => [els[x.idx], x.o]);
+                return attachMeta({
+                    f: def.f, base: def.base, charge: 0, html: pretty(def.base) + ` <span class="lw2-evalat">(átomo ${def.label})</span>`, alias: def.alias || [],
+                    central: els[ev], ligs, n, need: 8, D, N, E, L, lpC, lpLig: nb.map(x => lp[x.idx]), sumO: sumA[ev], fam, geom,
+                    fcC: fc[ev], fcLig: nb.map(x => fc[x.idx]), hypo: null, expanded: false, multi: ligs.some(([, o]) => o > 1), identical: false,
+                    polar: true, graph: { atoms: def.atoms, bonds: B, lp, fc }, evLabel: def.label,
+                    elements: [...new Set(els)].sort((a, b) => (a === els[ev] ? -1 : b === els[ev] ? 1 : 0))
+                });
+            }
+            const MOLS = DEFS.map(buildMol).concat(GRAPHS.map(buildGraph));
+            MOLS.forEach(m => { if (m.graph) m.polar = !(m.f in POLAR_NOTE && /μ = 0/.test(POLAR_NOTE[m.f])); });
             const normKey = s => {   // admite NH4+, SO4 2-, SO4-2, SO4^2-, NO3⁻, subíndices y superíndices unicode
                 const map = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁺': '+', '⁻': '-', '−': '-', '–': '-', '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9' };
                 const t = String(s || '').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻−–₀₁₂₃₄₅₆₇₈₉]/g, ch => map[ch]).toUpperCase().replace(/[\s_^{}()]/g, '');
@@ -2577,6 +2704,7 @@
             };
             const BY_KEY = {};
             MOLS.forEach(m => { BY_KEY[normKey(m.f)] = m; m.alias.forEach(a => { BY_KEY[normKey(a)] = m; }); });
+
 
             /* ================= LIENZO INTERACTIVO (PASO 3) ================= */
             const S = {
@@ -2764,10 +2892,15 @@
                 return `<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Estructura de Lewis">${body}</svg>`;
             }
             function modelSVG(m) {
-                const atoms = [{ id: 0, type: m.central, x: 150, y: 110, lp: m.lpC, charge: m.fcC }], bonds = [];
+                if (m.graph) {
+                    const G = m.graph, atoms = G.atoms.map((a, i) => ({ id: i, type: a[0], x: a[1][0], y: a[1][1], lp: G.lp[i], charge: G.fc[i] }));
+                    return structureSVG(atoms, G.bonds.map(([a, b, o]) => ({ a1: a, a2: b, order: o })), 0);
+                }
+                const cx = m.dia ? 110 : 150;
+                const atoms = [{ id: 0, type: m.central, x: cx, y: 110, lp: m.lpC, charge: m.fcC }], bonds = [];
                 m.ligs.forEach(([e, o], i) => {
                     const r = m.geom.dirs[i] * Math.PI / 180;
-                    atoms.push({ id: i + 1, type: e, x: 150 + 75 * Math.cos(r), y: 110 - 70 * Math.sin(r), lp: m.lpLig[i], charge: m.fcLig[i] });
+                    atoms.push({ id: i + 1, type: e, x: cx + 75 * Math.cos(r), y: 110 - 70 * Math.sin(r), lp: m.lpLig[i], charge: m.fcLig[i] });
                     bonds.push({ a1: 0, a2: i + 1, order: o });
                 });
                 return structureSVG(atoms, bonds, m.charge);
@@ -2787,6 +2920,18 @@
                 if (m.hypo === 'B') return 'Excepción al octeto (hipovalencia): el B tiene 3 e⁻ de valencia, forma 3 enlaces y se estabiliza con solo 6 e⁻ a su alrededor, sin completar el octeto y sin pares de electrones solitarios.';
                 return '';
             }
+            const expandedMsg = m => `Octeto expandido (fuera de la PAU CV): el ${m.central} (periodo 3 o superior, con orbitales d disponibles) puede rodearse de ${m.need} e⁻ en lugar de 8.`;
+            const DATIVE_NOTE = {
+                'NH4+': 'Un H⁺ (sin electrones) se une al par de electrones solitario del N: ese enlace es dativo (coordinado), aunque los cuatro enlaces N–H acaban siendo idénticos.',
+                'H3O+': 'Un H⁺ se une al par de electrones solitario del O del agua: enlace dativo (coordinado).',
+                'BF4-': 'El ion F⁻ aporta un par de electrones al B del BF₃ (que tiene un orbital vacío): enlace dativo (coordinado).'
+            };
+            const EXT_GEOM_NOTE = {
+                'AX4E': 'Con 5 nubes la distribución es una bipirámide trigonal; el par solitario ocupa una posición ecuatorial (donde hay menos repulsión) y la forma resultante es de balancín.',
+                'AX3E2': 'Con 5 nubes la distribución es una bipirámide trigonal; los 2 pares solitarios ocupan posiciones ecuatoriales y la forma resultante es de T.',
+                'AX2E3': 'Con 5 nubes la distribución es una bipirámide trigonal; los 3 pares solitarios ocupan las posiciones ecuatoriales y los 2 átomos quedan en los extremos: forma lineal.',
+                'AX4E2': 'Con 6 nubes la distribución es octaédrica; los 2 pares solitarios se colocan en posiciones opuestas (axiales) y los 4 átomos forman un cuadrado: plana cuadrada.'
+            };
             const multiMsg = m => `${MULTI_TEXT}: en ${m.html}, el ${m.central} tiene ${m.geom.sn} nubes (${bondDesc(m.central, m.ligs)}) = ${m.geom.name.toLowerCase()}.`;
 
             function evalCfg() {
@@ -2807,12 +2952,13 @@
             }
 
             function explainD(m) {
-                const g = {}; m.ligs.forEach(([e]) => { g[e] = (g[e] || 0) + 1; });
-                return `D = ${EL[m.central].v} (${m.central}) + ` + Object.keys(g).map(e => `${g[e] > 1 ? g[e] + '×' : ''}${EL[e].v} (${e})`).join(' + ') + (m.charge ? ` ${m.charge > 0 ? '−' : '+'} ${Math.abs(m.charge)} (por la carga ${fmtCharge(m.charge)} del ion)` : '') + ` = <b>${m.D}</b>`;
+                const g = {}; (m.graph ? m.graph.atoms.map(a => a[0]) : [m.central, ...m.ligs.map(l => l[0])]).forEach(e => { g[e] = (g[e] || 0) + 1; });
+                return `D = ` + Object.keys(g).map(e => `${g[e] > 1 ? g[e] + '×' : ''}${EL[e].v} (${e})`).join(' + ') + (m.charge ? ` ${m.charge > 0 ? '−' : '+'} ${Math.abs(m.charge)} (por la carga ${fmtCharge(m.charge)} del ion)` : '') + ` = <b>${m.D}</b>`;
             }
             function explainN(m) {
+                if (m.graph) { const g = {}; m.graph.atoms.forEach(a => { g[a[0]] = (g[a[0]] || 0) + 1; }); return `N = ` + Object.keys(g).map(e => `${g[e] > 1 ? g[e] + '×' : ''}${e === 'H' ? 2 : 8} (${e})`).join(' + ') + ` = <b>${m.N}</b>`; }
                 const g = {}; m.ligs.forEach(([e]) => { g[e] = (g[e] || 0) + 1; });
-                return `N = ${m.need} (${m.central}${m.hypo ? ', excepción al octeto' : ''}) + ` + Object.keys(g).map(e => `${g[e] > 1 ? g[e] + '×' : ''}${e === 'H' ? 2 : 8} (${e})`).join(' + ') + ` = <b>${m.N}</b>`;
+                return `N = ${m.need} (${m.central}${m.hypo ? ', excepción al octeto' : m.expanded ? ', octeto expandido' : ''}) + ` + Object.keys(g).map(e => `${g[e] > 1 ? g[e] + '×' : ''}${e === 'H' ? 2 : 8} (${e})`).join(' + ') + ` = <b>${m.N}</b>`;
             }
             function evalPairs() {
                 const m = S.mol, a = S.ans, msgs = [];
@@ -2831,27 +2977,74 @@
                     if (!chk.L) msgs.push(`L (electrones solitarios) = D − E = ${m.D} − ${m.E} = <b>${m.L}</b>.` + (sL !== null && sD !== null && sE !== null && sL !== sD - sE ? ` Con tus valores de D y E, D − E da ${sD - sE}: revisa la resta.` : ''));
                     if (chk.D && chk.N && (!chk.E || !chk.L)) msgs.push('Tienes D y N bien: repasa las restas.');
                 }
-                if (chk.B && chk.P) msgs.push(`✓ ${m.n} nubes de enlace + ${lpTxt(m.lpC)} = número estérico ${m.geom.sn} (${famPretty(m.fam)}).`);
+                if (chk.B && chk.P) msgs.push(m.dia ? `✓ ${m.n} nube de enlace + ${lpTxt(m.lpC)} en el ${m.central}.` : `✓ ${m.n} nubes de enlace + ${lpTxt(m.lpC)} = número estérico ${m.geom.sn} (${famPretty(m.fam)}).`);
                 else {
                     if (!chk.B) msgs.push(m.multi && b === m.sumO
                         ? `Has contado ${b} pares compartidos (e⁻ de enlace ÷ 2). Aquí hay <b>${m.n}</b> nubes de enlace.`
                         : `Nubes de enlace: <b>${m.n}</b>, una por cada átomo unido al ${m.central} (${bondDesc(m.central, m.ligs)}).`);
-                    if (!chk.P) msgs.push(`Pares de electrones solitarios en el ${m.central}: <b>${m.lpC}</b>. De los ${m.L} e⁻ solitarios, los ligandos completan primero su octeto y al ${m.central} le quedan ${2 * m.lpC} e⁻.`);
-                    msgs.push(`Número estérico = nubes de enlace + pares de electrones solitarios = ${m.geom.sn} (máximo permitido en la PAU: 4).`);
+                    if (!chk.P) msgs.push((m.graph || m.dia)
+                        ? `Pares de electrones solitarios en el ${m.central}: <b>${m.lpC}</b>. El ${m.central} forma ${m.sumO} ${pl(m.sumO, 'enlace', 'enlaces')} (un doble cuenta 2, un triple 3): le sobran (${m.need} − 2·${m.sumO}) ÷ 2 = ${m.lpC} ${pl(m.lpC, 'par', 'pares')} de e⁻.`
+                        : `Pares de electrones solitarios en el ${m.central}: <b>${m.lpC}</b>. De los ${m.L} e⁻ solitarios, los ligandos completan primero su octeto y al ${m.central} le quedan ${2 * m.lpC} e⁻.`);
+                    if (!m.dia) msgs.push(`Número estérico = nubes de enlace + pares de electrones solitarios = ${m.geom.sn} (${m.ext ? 'octeto expandido: más de 4 nubes, fuera de la PAU CV' : 'máximo permitido en la PAU: 4'}).`);
                 }
                 if (m.hypo) msgs.push(hypoMsg(m));
-                if (m.multi) msgs.push(multiMsg(m));
+                if (m.expanded) msgs.push(expandedMsg(m));
+                if (m.multi && !m.dia) msgs.push(multiMsg(m));
                 const dash = v => (v === null ? '—' : v);
                 return {
                     status,
                     yours: `D = ${dash(sD)} · N = ${dash(sN)}<br>E = ${dash(sE)} · L = ${dash(sL)}<br>${dash(b)} ${pl(b, 'nube', 'nubes')} de enlace · ${dash(l)} pares de electrones solitarios`,
-                    correct: `D = ${m.D} · N = ${m.N}<br>E = ${m.E} · L = ${m.L}<br>${m.n} nubes de enlace · ${m.lpC} pares de electrones solitarios<br>Número estérico: ${m.geom.sn}`,
+                    correct: `D = ${m.D} · N = ${m.N}<br>E = ${m.E} · L = ${m.L}<br>${m.n} ${pl(m.n, 'nube', 'nubes')} de enlace · ${m.lpC} pares de electrones solitarios${m.dia ? '' : `<br>Número estérico: ${m.geom.sn}`}`,
                     msgs
                 };
             }
 
+            /** Evaluación de moléculas con varios centros (orgánicas): compara el dibujo con la estructura modelo por isomorfismo de grafos */
+            function evalLewisGraph() {
+                const m = S.mol, A = cv.atoms, B = cv.bonds, G = m.graph, msgs = [];
+                const res = status => ({ status, yours: A.length ? studentSVG() : '—', correct: modelSVG(m), msgs });
+                if (!A.length) { msgs.push('No has dibujado ninguna estructura: añade los átomos, únelos con enlaces y coloca los pares de electrones solitarios.'); return res('bad'); }
+                const needC = {}, haveC = {};
+                G.atoms.forEach(a => { needC[a[0]] = (needC[a[0]] || 0) + 1; }); A.forEach(a => { haveC[a.type] = (haveC[a.type] || 0) + 1; });
+                const diffs = [];
+                Object.keys({ ...needC, ...haveC }).forEach(e => { const d = (haveC[e] || 0) - (needC[e] || 0); if (d < 0) diffs.push(`faltan ${-d}× ${e}`); if (d > 0) diffs.push(`sobran ${d}× ${e}`); });
+                if (diffs.length) { msgs.push(`Los átomos no coinciden con la fórmula ${pretty(m.base)}: ${diffs.join(', ')}.`); return res('bad'); }
+
+                const idx = {}; A.forEach((a, i) => { idx[a.id] = i; });
+                const ref = G.atoms.map((a, i) => ({ el: a[0], lp: G.lp[i], nb: [] })); G.bonds.forEach(([a, b, o]) => { ref[a].nb.push([b, o]); ref[b].nb.push([a, o]); });
+                const stu = A.map(a => ({ el: a.type, lp: a.lp, nb: [] })); B.forEach(b => { stu[idx[b.a1]].nb.push([idx[b.a2], b.order]); stu[idx[b.a2]].nb.push([idx[b.a1], b.order]); });
+                const n = ref.length, map = new Array(n).fill(-1), used = new Array(n).fill(false);
+                const bt = i => {
+                    if (i === n) return true;
+                    for (let j = 0; j < n; j++) {
+                        if (used[j] || ref[i].el !== stu[j].el || ref[i].lp !== stu[j].lp || ref[i].nb.length !== stu[j].nb.length) continue;
+                        let good = true;
+                        for (const [k, o] of ref[i].nb) { if (map[k] >= 0) { const f = stu[j].nb.find(x => x[0] === map[k]); if (!f || f[1] !== o) { good = false; break; } } }
+                        if (!good) continue;
+                        map[i] = j; used[j] = true; if (bt(i + 1)) return true; map[i] = -1; used[j] = false;
+                    }
+                    return false;
+                };
+                if (bt(0)) {
+                    msgs.push(`✓ Estructura correcta: ${bondDescGraph(G)}.`);
+                    if (m.multi) msgs.push(multiMsg(m));
+                    let status = 'ok';
+                    if (cv.ion !== 0) { status = 'partial'; msgs.push(`${m.html} es una molécula neutra: la carga total debe ser 0.`); }
+                    return res(status);
+                }
+                const totE = B.reduce((s, b) => s + 2 * b.order, 0) + A.reduce((s, a) => s + 2 * a.lp, 0);
+                if (totE !== m.D) msgs.push(`Has distribuido ${totE} e⁻ y la molécula dispone de ${m.D} e⁻ (suma de los e⁻ de valencia de todos los átomos).`);
+                const so = A.map(() => 0); B.forEach(b => { so[idx[b.a1]] += b.order; so[idx[b.a2]] += b.order; });
+                A.forEach((a, i) => { const e = 2 * so[i] + 2 * a.lp, t = a.type === 'H' ? 2 : 8; if (e !== t && msgs.length < 6) msgs.push(`${a.type} tiene ${e} e⁻ a su alrededor y debería tener ${t}${a.type === 'H' ? ' (el H solo admite 2)' : ' (octeto)'}.`); });
+                msgs.push(`Revisa los enlaces: en ${pretty(m.base)} hay ${bondDescGraph(G)}.`);
+                msgs.push('Comprueba también que cada átomo de C forme 4 enlaces (contando dobles y triples), el O 2 y el H 1, y que los pares de electrones solitarios completen el octeto.');
+                if (m.multi) msgs.push(multiMsg(m));
+                return res('partial');
+            }
+
             function evalLewis() {
                 const m = S.mol, A = cv.atoms, B = cv.bonds, msgs = [];
+                if (m.graph) return evalLewisGraph();
                 const correct = modelSVG(m);
                 const res = (status, yoursExtra) => ({ status, yours: A.length ? studentSVG() : '—', correct, msgs });
                 if (!A.length) { msgs.push('No has dibujado ninguna estructura: añade los átomos, únelos con enlaces y coloca los pares de electrones solitarios.'); return res('bad'); }
@@ -2886,8 +3079,8 @@
 
                 if (exact) {
                     msgs.push(`✓ Estructura correcta: ${bondDesc(m.central, m.ligs)}${m.lpC ? ` y ${m.lpC} ${pl(m.lpC, 'par de electrones solitario', 'pares de electrones solitarios')} en el ${m.central}` : ''}.`);
-                    if (m.hypo) msgs.push(hypoMsg(m));
-                    if (m.multi) msgs.push(multiMsg(m));
+                    if (m.hypo) msgs.push(hypoMsg(m)); if (m.expanded) msgs.push(expandedMsg(m));
+                    if (m.multi && !m.dia) msgs.push(multiMsg(m)); if (DATIVE_NOTE[m.f]) msgs.push(DATIVE_NOTE[m.f]);
                     if (new Set(m.ligs.map(l => l[1])).size > 1 && new Set(m.ligs.map(l => l[0])).size === 1) msgs.push('Existen formas resonantes equivalentes (el doble enlace puede estar en cualquiera de los átomos equivalentes); cualquiera de ellas es válida.');
                     const exp = [[m.central, m.fcC], ...m.ligs.map(([e], i) => [e, m.fcLig[i]])].filter(x => x[1] !== 0);
                     if (exp.length) {
@@ -2908,10 +3101,10 @@
                 const totE = B.reduce((s, b) => s + 2 * b.order, 0) + A.reduce((s, a) => s + 2 * a.lp, 0);
                 if (totE !== m.D) msgs.push(`Has distribuido ${totE} e⁻ y ${m.charge ? 'el ion' : 'la molécula'} dispone de ${m.D} e⁻ (suma de los e⁻ de valencia${m.charge ? ' menos la carga' : ''}).`);
                 if (m.charge !== 0 && cv.ion !== m.charge) msgs.push(`No olvides indicar la carga total del ion (${fmtCharge(m.charge)}) con «Carga total del ion».`);
-                const target = a => (a.type === 'H' ? 2 : (a === C && m.hypo ? (m.hypo === 'Be' ? 4 : 6) : 8));
+                const target = a => (a.type === 'H' ? 2 : (a === C ? m.need : 8));
                 const bad = A.filter(a => 2 * so[a.id] + 2 * a.lp !== target(a));
-                bad.slice(0, 4).forEach(a => msgs.push(`${a.type} tiene ${2 * so[a.id] + 2 * a.lp} e⁻ a su alrededor y debería tener ${target(a)}${a === C && m.hypo ? ' (excepción al octeto)' : a.type === 'H' ? ' (el H solo admite 2)' : ' (octeto)'}.`));
-                if (m.hypo) msgs.push(hypoMsg(m));
+                bad.slice(0, 4).forEach(a => msgs.push(`${a.type} tiene ${2 * so[a.id] + 2 * a.lp} e⁻ a su alrededor y debería tener ${target(a)}${a === C && m.hypo ? ' (excepción al octeto)' : a === C && m.expanded ? ' (octeto expandido)' : a.type === 'H' ? ' (el H solo admite 2)' : ' (octeto)'}.`));
+                if (m.hypo) msgs.push(hypoMsg(m)); if (m.expanded) msgs.push(expandedMsg(m));
                 const ordKey = x => `${x.el}|${x.o}`;
                 if (JSON.stringify(mine.map(ordKey).sort()) !== JSON.stringify(ref.map(ordKey).sort())) msgs.push(`Revisa los órdenes de enlace: en ${m.html} hay ${bondDesc(m.central, m.ligs)}.`);
                 if (C.lp !== m.lpC) msgs.push(`El ${m.central} debe tener ${m.lpC} ${pl(m.lpC, 'par de electrones solitario', 'pares de electrones solitarios')} (tú has puesto ${C.lp}).`);
@@ -2922,11 +3115,16 @@
 
             function evalGeom() {
                 const m = S.mol, g = m.geom, yours = S.ans.geom, ok = yours === g.name, msgs = [];
-                msgs.push(`${g.sn} nubes de electrones (${m.n} de enlace${m.lpC ? ` y ${m.lpC} ${pl(m.lpC, 'par de electrones solitario', 'pares de electrones solitarios')}` : ''}) → ${famPretty(m.fam)} → <b>${g.name}</b>.`);
-                if (m.lpC > 0) msgs.push(`Los pares de electrones solitarios ocupan una nube, pero la forma de la molécula solo describe la posición de los átomos: las ${g.sn} nubes se orientan como ${g.sn === 3 ? 'un triángulo plano' : 'un tetraedro'} y la forma resultante es ${g.name.toLowerCase()}.`);
-                if (m.multi) msgs.push(multiMsg(m));
-                if (m.hypo) msgs.push(hypoMsg(m));
-                if (!ok) {
+                if (m.dia) msgs.push(`Una molécula diatómica solo tiene dos átomos: su forma es siempre <b>lineal</b>.`);
+                else {
+                    msgs.push(`${g.sn} nubes de electrones (${m.n} de enlace${m.lpC ? ` y ${m.lpC} ${pl(m.lpC, 'par de electrones solitario', 'pares de electrones solitarios')}` : ''}) → ${famPretty(m.fam)} → <b>${g.name}</b>.`);
+                    if (m.lpC > 0 && !m.ext) msgs.push(`Los pares de electrones solitarios ocupan una nube, pero la forma de la molécula solo describe la posición de los átomos: las ${g.sn} nubes se orientan como ${SHAPE_OF[g.sn]} y la forma resultante es ${g.name.toLowerCase()}.`);
+                    if (m.ext && EXT_GEOM_NOTE[m.fam]) msgs.push(EXT_GEOM_NOTE[m.fam]);
+                    if (m.multi) msgs.push(multiMsg(m));
+                    if (m.hypo) msgs.push(hypoMsg(m));
+                    if (m.expanded) msgs.push(expandedMsg(m));
+                }
+                if (!ok && !m.dia) {
                     const b = parseInt(S.ans.bp, 10), l = parseInt(S.ans.lp, 10), g2 = GEOM[famOf(b, l)];
                     if (g2 && g2.name === yours && famOf(b, l) !== m.fam) msgs.push('Tu geometría es coherente con los pares que indicaste en el paso 2, pero ese recuento no era correcto: revisa primero las nubes.');
                 }
@@ -2935,19 +3133,24 @@
 
             function evalAngle() {
                 const m = S.mol, g = m.geom, rel = S.ans.rel, val = parseFloat(String(S.ans.ang).replace(',', '.')), msgs = [];
-                const valOK = isFinite(val) && (g.rel === '=' ? Math.abs(val - g.angle) <= 1 : (val <= g.angle && val >= g.low));
-                const relOK = rel === g.rel;
+                if (m.dia) {
+                    const ok = rel === 'na';
+                    msgs.push(ok ? '✓ Una molécula diatómica no tiene ángulo de enlace: solo hay dos átomos y un único enlace.' : 'En una molécula diatómica no hay ángulo de enlace (solo dos átomos y un enlace). Elige «No procede».');
+                    return { status: ok ? 'ok' : 'bad', yours: rel === 'na' ? 'No procede' : `${rel === '<' ? '&lt;' : '='} ${isFinite(val) ? fmtNum(val) + 'º' : '—'}`, correct: 'No procede (molécula diatómica)', msgs };
+                }
+                const valOK = isFinite(val) && (g.accept ? g.accept.some(([r, lo, hi]) => rel === r && val >= lo && val <= hi) : (g.rel === '=' ? Math.abs(val - g.angle) <= 1 : (val <= g.angle && val >= g.low)));
+                const relOK = g.accept ? g.accept.some(([r]) => r === rel) : rel === g.rel;
                 const status = relOK && valOK ? 'ok' : (relOK || valOK) ? 'partial' : 'bad';
                 const yours = `${rel === '<' ? '&lt;' : '='} ${isFinite(val) ? fmtNum(val) + 'º' : '—'}`;
                 msgs.push(`${status === 'ok' ? '✓ ' : ''}Ángulo de enlace esperado en ${g.name.toLowerCase()} con ${famPretty(m.fam)}: <b>${esc(g.idealTxt)}</b>.`);
                 if (g.rel === '=') {
-                    if (status !== 'ok') msgs.push(`Sin pares de electrones solitarios en el ${m.central}, todas las nubes son equivalentes y el ángulo coincide con el ideal (${esc(g.idealTxt)}).`);
-                    if (rel === '<') msgs.push(`${m.html} no tiene pares de electrones solitarios en el ${m.central}, por lo que no hay compresión del ángulo.`);
+                    if (status !== 'ok') msgs.push(m.lpC > 0 ? `Los ${m.lpC} pares de electrones solitarios se colocan en posiciones opuestas (simetría) y no comprimen los ángulos: se mantiene el ángulo ideal (${esc(g.idealTxt)}).` : `Sin pares de electrones solitarios en el ${m.central}, todas las nubes son equivalentes y el ángulo coincide con el ideal (${esc(g.idealTxt)}).`);
+                    if (rel === '<') msgs.push(`${m.html} no tiene compresión de ángulos${m.lpC > 0 ? ' (los pares solitarios están en posiciones opuestas)' : ` (no hay pares de electrones solitarios en el ${m.central})`}.`);
                 } else {
-                    if (rel === '=') msgs.push(`Con ${m.lpC} ${pl(m.lpC, 'par de electrones solitario', 'pares de electrones solitarios')} en el ${m.central} el ángulo no es el ideal (${fmtNum(g.angle)}º): es menor.`);
-                    else if (isFinite(val) && val > g.angle) msgs.push(`El valor debe ser menor que ${fmtNum(g.angle)}º.`);
-                    else if (isFinite(val) && val < g.low) msgs.push(`Un valor tan pequeño no es habitual: ${g.sn === 3 ? 'en el tipo AX₂E el ángulo es algo menor de 120º' : 'se toma ≈ 107º (AX₃E) o ≈ 104,5º (AX₂E₂)'}.`);
-                    if (m.central === 'P' || m.central === 'S') msgs.push(`En átomos centrales más grandes (como ${m.central}) el ángulo real es aún menor (≈ 92–94º), pero en la PAU basta con indicar «${esc(g.idealTxt.replace(/\s*\(.*\)/, ''))}».`);
+                    if (rel === '=') msgs.push(`Con ${m.lpC} ${pl(m.lpC, 'par de electrones solitario', 'pares de electrones solitarios')} en el ${m.central} el ángulo no es el ideal: es menor.`);
+                    else if (!g.accept && isFinite(val) && val > g.angle) msgs.push(`El valor debe ser menor que ${fmtNum(g.angle)}º.`);
+                    else if (!g.accept && isFinite(val) && val < g.low) msgs.push(`Un valor tan pequeño no es habitual: ${g.sn === 3 ? 'en el tipo AX₂E el ángulo es algo menor de 120º' : 'se toma ≈ 107º (AX₃E) o ≈ 104,5º (AX₂E₂)'}.`);
+                    if (!g.ext && (m.central === 'P' || m.central === 'S')) msgs.push(`En átomos centrales más grandes (como ${m.central}) el ángulo real es aún menor (≈ 92–94º), pero en la PAU basta con indicar «${esc(g.idealTxt.replace(/\s*\(.*\)/, ''))}».`);
                 }
                 return { status, yours, correct: esc(g.idealTxt), msgs, quote: (g.rel === '<' || rel === '<') ? ANGLE_TEXT : '' };
             }
@@ -2957,6 +3160,12 @@
                 m.ligs.forEach(([e, o]) => { if (!seen[e]) { seen[e] = 1; list.push(`${m.central}${BOND_SYM[o]}${e} (ΔEN = ${fmtNum(Math.abs(EL[m.central].en - EL[e].en).toFixed(2))})`); } });
                 const msgs = [`Polaridad de los enlaces (diferencia de electronegatividad de Pauling): ${list.join('; ')}.`];
                 const gn = m.geom.name.toLowerCase();
+                if (m.dia) {
+                    const same = m.ligs[0][0] === m.central;
+                    msgs.push(same ? `El enlace ${m.central}${BOND_SYM[m.ligs[0][1]]}${m.ligs[0][0]} une átomos iguales (ΔEN = 0): es un enlace apolar y la molécula es <b>apolar</b> (μ = 0).` : `Es una molécula diatómica con átomos de distinta electronegatividad: el único enlace es polar y su momento dipolar no se anula, μ ≠ 0 → molécula <b>polar</b>.`);
+                    return msgs;
+                }
+                if (m.polarNote) { msgs.push(`${m.polarNote} → molécula <b>${m.polar ? 'polar' : 'apolar'}</b>.`); return msgs; }
                 if (m.lpC > 0) {
                     msgs.push(`La geometría ${gn} es asimétrica (hay ${m.lpC} ${pl(m.lpC, 'par de electrones solitario', 'pares de electrones solitarios')} en el ${m.central}): los momentos dipolares de enlace no se anulan, μ ≠ 0 → molécula <b>polar</b>.`);
                     if (m.f === 'O3') msgs.push('Caso especial: los dos enlaces O–O son del mismo elemento, pero las cargas formales (+ en el O central, − en un O terminal) hacen que el O₃ tenga un pequeño momento dipolar (μ ≈ 0,5 D): es ligeramente polar.');
@@ -2995,7 +3204,7 @@
                     case 2: return ['d', 'n', 'e', 'l', 'bp', 'lp'].every(f => a[f] !== '');
                     case 3: return cv.atoms.length > 0;
                     case 4: return !!a.geom;
-                    case 5: return a.ang !== '';
+                    case 5: return a.rel === 'na' || a.ang !== '';
                     case 6: return !!a.pol;
                 }
                 return false;
@@ -3057,7 +3266,7 @@
                 m.elements.forEach(e => {
                     const lab = document.createElement('label'); lab.className = 'lw2-calc-label';
                     const isCentral = e === m.central, isLig = m.ligs.some(l => l[0] === e);
-                    const tag = isCentral && isLig ? 'átomo central y ligandos' : isCentral ? 'átomo central' : 'ligando';
+                    const tag = m.graph ? (isCentral ? 'átomo evaluado' : 'elemento') : (isCentral && isLig ? 'átomo central y ligandos' : isCentral ? 'átomo central' : 'ligando');
                     lab.innerHTML = `<span>${esc(e)} (Z = ${EL[e].z}) <span class="lw2-tag"${isCentral ? '' : ' style="background:#e0f2fe;color:#075985"'}>${tag}</span></span>`;
                     const inp = document.createElement('input');
                     inp.className = 'lw2-calc-input'; inp.id = 'lw2-cfg-' + e; inp.type = 'text'; inp.placeholder = '1s2 2s2 …'; inp.autocomplete = 'off'; inp.spellcheck = false;
@@ -3072,7 +3281,10 @@
                 ['lw2-D', 'lw2-N', 'lw2-E', 'lw2-L', 'lw2-bp', 'lw2-lp', 'lw2-ang', 'lw2-just'].forEach(id => { $(id).value = ''; }); $('lw2-rel').value = '=';
                 for (let k = 1; k <= 6; k++) { const b = $('lw2-fb' + k); b.innerHTML = ''; b.classList.add('lw2-hidden'); }
                 buildStep1(); clearCanvas(); setTool('connect'); $('lw2-opt-ion').classList.toggle('lw2-hidden', !m.charge);
-                $('lw2-molname').innerHTML = m.html; $('lw2-c2').textContent = m.central;
+                $('lw2-molname').innerHTML = m.html + ' · ' + esc(m.name); $('lw2-c2').textContent = m.central; $('lw2-c2lab').textContent = m.graph ? 'átomo evaluado' : 'átomo central';
+                $('lw2-badges').innerHTML = badgesHTML(m);
+                const relSel = $('lw2-rel'); relSel.innerHTML = '<option value="=">Igual a (=)</option><option value="&lt;">Menor que (&lt;)</option>' + (m.dia ? '<option value="na">No procede (diatómica)</option>' : ''); relSel.value = '=';
+                document.querySelectorAll('#lw2-geoms .lw2-ext').forEach(b => b.classList.toggle('lw2-hidden', !m.ext));
                 $('lw2-picker').classList.add('lw2-hidden'); $('lw2-report').classList.add('lw2-hidden'); $('lw2-wizard').classList.remove('lw2-hidden');
                 updateUI();
                 $('lw2-wizard').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -3083,18 +3295,52 @@
                 startMol(m);
             }
             function pickFromInput() { pick($('lw2-input').value); }
-            function random() { const pool = MOLS.filter(x => x !== S.mol); startMol(pool[Math.floor(Math.random() * pool.length)]); }
+            function random() { const pool = MOLS.filter(x => x !== S.mol && passFilter(x, S.filter)); startMol(pool[Math.floor(Math.random() * pool.length)]); }
             function change() { $('lw2-wizard').classList.add('lw2-hidden'); $('lw2-report').classList.add('lw2-hidden'); $('lw2-picker').classList.remove('lw2-hidden'); $('lw2-picker').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
             function retry() { startMol(S.mol); }
 
             /* ================= RESUMEN FINAL (aparece al verificar los 6 pasos) ================= */
+            /* ================= SELECTOR DE MOLÉCULAS: niveles, etiquetas PAU y filtros ================= */
+            const FILTERS = [['todas', 'Todas'], ['pau', '⭐ Solo PAU'], ['ion', 'Iones'], ['hipo', 'Hipovalentes'], ['reson', 'Resonancia'], ['org', 'Orgánicas'], ['ext', 'Ampliación']];
+            const passFilter = (m, f) => ({ todas: true, pau: m.pau, ion: m.charge !== 0, hipo: !!m.hypo, reson: m.tags.includes('Resonancia'), org: m.nivel === 6, ext: m.ext })[f];
+            S.filter = 'todas';
+            function setFilter(f) { S.filter = f; renderChips(); }
+            function renderChips() {
+                const fb = $('lw2-filters'); fb.innerHTML = '';
+                FILTERS.forEach(([k, label]) => { const b = document.createElement('button'); b.className = 'lw2-chip lw2-filter' + (S.filter === k ? ' lw2-on' : ''); b.textContent = label; b.onclick = () => setFilter(k); fb.appendChild(b); });
+                const box = $('lw2-chips'); box.innerHTML = '';
+                [1, 2, 3, 4, 5, 6].forEach(lv => {
+                    const list = MOLS.filter(m => m.nivel === lv && passFilter(m, S.filter));
+                    if (!list.length) return;
+                    const g = document.createElement('div'); g.className = 'lw2-lvl' + (lv === 5 ? ' lw2-lvl-ext' : '');
+                    g.innerHTML = `<div class="lw2-lvl-t">${LEVELS[lv][0]}</div><div class="lw2-lvl-o">${LEVELS[lv][1]}</div>`;
+                    const row = document.createElement('div'); row.className = 'lw2-chips'; row.style.marginTop = '.4rem';
+                    list.forEach(m => {
+                        const b = document.createElement('button');
+                        b.className = 'lw2-chip' + (m.charge ? ' lw2-chip-ion' : '') + (m.ext ? ' lw2-chip-ext' : '');
+                        b.title = `${m.name}${m.pau ? ' · PAU: ' + m.pauSrc : ''}${m.tags.length ? ' · ' + m.tags.join(', ') : ''}`;
+                        b.innerHTML = '<span>' + m.html + '</span>' + (m.pau ? '<span class="lw2-pau">PAU</span>' : '');
+                        b.onclick = () => pick(m.f); row.appendChild(b);
+                    });
+                    g.appendChild(row); box.appendChild(g);
+                });
+                if (!box.children.length) box.innerHTML = '<p class="lw2-p">No hay moléculas con este filtro.</p>';
+            }
+            function badgesHTML(m) {
+                const out = [`<span class="lw2-tg lw2-tg-lvl">Nivel ${m.nivel}</span>`];
+                if (m.pau) out.push(`<span class="lw2-tg lw2-tg-pau">⭐ PAU · ${esc(m.pauSrc)}</span>`);
+                if (m.ext) out.push('<span class="lw2-tg lw2-tg-ext">Ampliación · fuera de la PAU CV</span>');
+                m.tags.forEach(t => out.push(`<span class="lw2-tg">${esc(t)}</span>`));
+                return out.join('');
+            }
+
             function renderSummary() {
                 const m = S.mol, g = m.geom, first = $('lw2-report').classList.contains('lw2-hidden');
                 const res = [1, 2, 3, 4, 5, 6].map(k => S.res[k]);
                 const pts = res.reduce((s, r) => s + (r.status === 'ok' ? 1 : r.status === 'partial' ? 0.5 : 0), 0);
                 const verdict = pts === 6 ? '¡Nota máxima! Has dominado esta molécula.' : pts >= 4 ? 'Muy bien. Repasa los pasos marcados para llegar al máximo.' : 'Revisa la explicación de cada paso y corrígelos: el resumen se actualiza al volver a verificar.';
                 const dots = res.map((r, i) => `<span class="lw2-pts" title="${STEP_TITLES[i]}">${i + 1}: ${r.status === 'ok' ? '✓' : r.status === 'partial' ? '½' : '✗'}</span>`).join(' ');
-                $('lw2-report').innerHTML = `<div class="lw2-card"><div class="lw2-score"><div class="lw2-score-n">${fmtNum(pts)}/6</div><div style="flex:1 1 14rem;min-width:0"><div style="font-weight:800;font-size:1.05rem">Resultado de ${m.html}</div><div class="lw2-p" style="margin:.2rem 0 .4rem">${verdict}</div><div style="display:flex;flex-wrap:wrap;gap:.3rem">${dots}</div></div></div>
+                $('lw2-report').innerHTML = `<div class="lw2-card"><div class="lw2-score"><div class="lw2-score-n">${fmtNum(pts)}/6</div><div style="flex:1 1 14rem;min-width:0"><div style="font-weight:800;font-size:1.05rem">Resultado de ${m.html} · ${esc(m.name)}</div><div class="lw2-badges" style="margin:.3rem 0">${badgesHTML(m)}</div><div class="lw2-p" style="margin:.2rem 0 .4rem">${verdict}</div><div style="display:flex;flex-wrap:wrap;gap:.3rem">${dots}</div></div></div>
                     <div class="lw2-row" style="margin-top:.75rem"><button class="lw2-btn lw2-btn-primary" onclick="LW2.retry()">🔁 Repetir desde cero</button><button class="lw2-btn" onclick="LW2.random()">🎲 Otra molécula</button><button class="lw2-btn" onclick="LW2.change()">Elegir molécula</button></div></div>
                     <div class="lw2-card lw2-solution"><h2 class="lw2-h2"><span>Resumen modelo · ${m.html}</span></h2>
                     <div class="lw2-sol-grid">
@@ -3112,12 +3358,10 @@
 
             /* ================= INICIALIZACIÓN ================= */
             function init() {
-                const chips = $('lw2-chips'); chips.innerHTML = '';
-                [...MOLS].sort((a, b) => a.f.localeCompare(b.f)).forEach(m => {
-                    const b = document.createElement('button'); b.className = 'lw2-chip' + (m.charge ? ' lw2-chip-ion' : ''); b.innerHTML = m.html; b.onclick = () => pick(m.f); chips.appendChild(b);
-                });
+                renderChips();
                 const gb = $('lw2-geoms'); gb.innerHTML = '';
                 GEOM_NAMES.forEach(n => { const b = document.createElement('button'); b.className = 'lw2-opt'; b.dataset.v = n; b.textContent = n; b.onclick = () => setGeom(n); gb.appendChild(b); });
+                GEOM_NAMES_EXT.forEach(n => { const b = document.createElement('button'); b.className = 'lw2-opt lw2-ext lw2-hidden'; b.dataset.v = n; b.textContent = n; b.onclick = () => setGeom(n); gb.appendChild(b); });
                 const qb = $('lw2-quick'); qb.innerHTML = '';
                 [180, 120, 109.5, 107, 104.5].forEach(v => { const b = document.createElement('button'); b.className = 'lw2-chip'; b.textContent = fmtNum(v) + 'º'; b.onclick = () => { $('lw2-ang').value = v; syncAnswers(); updateUI(); }; qb.appendChild(b); });
                 $('lw2-input').addEventListener('keydown', e => { if (e.key === 'Enter') pickFromInput(); });
@@ -3125,7 +3369,7 @@
             }
             init();
 
-            return { pick, pickFromInput, random, change, goStep, verify, addAtom, setTool, theme, clearCanvas, setIon, setGeom, setPol, retry,
+            return { pick, pickFromInput, random, change, goStep, verify, addAtom, setTool, theme, clearCanvas, setIon, setGeom, setPol, retry, setFilter,
                      util: { groundConfig, parseConfig, cfgMap, sameMap } };
         })();
 
